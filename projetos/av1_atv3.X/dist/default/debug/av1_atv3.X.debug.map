@@ -1,0 +1,102 @@
+MPLINK 5.08, LINKER
+Linker Map File - Created Tue Mar 13 15:33:54 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000002
+                   .org_2       code   0x000004    program   0x0001b0
+.config_2007_/HOME/FELIPE/DOCUMENTOS/UNIVERSI       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000000      
+                            0x000004    0x0000db      
+                            0x002007    0x002007      
+            218 out of 1158 program addresses used, program memory utilization is 18%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                       DO   0x000034    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                       FA   0x00007c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                GP0H_GP5L   0x000020    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                 HI_LO_DO   0x000043    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                 HI_LO_FA   0x00008b    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                 HI_LO_LA   0x0000bb    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                 HI_LO_MI   0x000073    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                 HI_LO_RE   0x00005b    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                 HI_LO_SI   0x0000d3    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                HI_LO_SOL   0x0000a3    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                   INICIO   0x00000d    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                       LA   0x0000ac    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+             LOOP_NOTE_DO   0x00003d    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+             LOOP_NOTE_FA   0x000085    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+             LOOP_NOTE_LA   0x0000b5    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+             LOOP_NOTE_MI   0x00006d    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+             LOOP_NOTE_RE   0x000055    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+             LOOP_NOTE_SI   0x0000cd    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+            LOOP_NOTE_SOL   0x00009d    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                    LO_DO   0x00004a    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                    LO_FA   0x000092    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                    LO_LA   0x0000c2    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                    LO_MI   0x00007a    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                    LO_RE   0x000062    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                    LO_SI   0x0000da    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                   LO_SOL   0x0000aa    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                     MAIN   0x00001c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                       MI   0x000064    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+               PLAY_SCALE   0x000024    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                       RE   0x00004c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                  SAI_INT   0x000007    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                       SI   0x0000c4    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                      SOL   0x000094    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+               SUBROTINA1   0x00000c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                  SAI_INT   0x000007    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+               SUBROTINA1   0x00000c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                   INICIO   0x00000d    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                     MAIN   0x00001c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                GP0H_GP5L   0x000020    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+               PLAY_SCALE   0x000024    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                       DO   0x000034    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+             LOOP_NOTE_DO   0x00003d    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                 HI_LO_DO   0x000043    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                    LO_DO   0x00004a    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                       RE   0x00004c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+             LOOP_NOTE_RE   0x000055    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                 HI_LO_RE   0x00005b    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                    LO_RE   0x000062    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                       MI   0x000064    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+             LOOP_NOTE_MI   0x00006d    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                 HI_LO_MI   0x000073    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                    LO_MI   0x00007a    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                       FA   0x00007c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+             LOOP_NOTE_FA   0x000085    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                 HI_LO_FA   0x00008b    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                    LO_FA   0x000092    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                      SOL   0x000094    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+            LOOP_NOTE_SOL   0x00009d    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                HI_LO_SOL   0x0000a3    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                   LO_SOL   0x0000aa    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                       LA   0x0000ac    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+             LOOP_NOTE_LA   0x0000b5    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                 HI_LO_LA   0x0000bb    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                    LO_LA   0x0000c2    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                       SI   0x0000c4    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+             LOOP_NOTE_SI   0x0000cd    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                 HI_LO_SI   0x0000d3    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+                    LO_SI   0x0000da    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM
+
+

@@ -1,0 +1,17 @@
+Message[302] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 128 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 129 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 131 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[305] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 200 : Using default destination of 1 (file).
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 213 : Found label after column 1. (LOOP_NOTE_DO)
+Message[305] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 239 : Using default destination of 1 (file).
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 252 : Found label after column 1. (LOOP_NOTE_RE)
+Message[305] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 278 : Using default destination of 1 (file).
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 291 : Found label after column 1. (LOOP_NOTE_MI)
+Message[305] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 318 : Using default destination of 1 (file).
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 331 : Found label after column 1. (LOOP_NOTE_FA)
+Message[305] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 357 : Using default destination of 1 (file).
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 370 : Found label after column 1. (LOOP_NOTE_SOL)
+Message[305] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 396 : Using default destination of 1 (file).
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 409 : Found label after column 1. (LOOP_NOTE_LA)
+Message[305] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 435 : Using default destination of 1 (file).
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av1_atv3.X/atv3.ASM 448 : Found label after column 1. (LOOP_NOTE_SI)

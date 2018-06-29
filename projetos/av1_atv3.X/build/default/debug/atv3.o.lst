@@ -1,0 +1,873 @@
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-13-2018  12:33:53         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00002 ;*              MODIFICAÇÕES PARA USO COM 12F675                   *
+                      00003 ;*                FEITAS PELO PROF. MARDSON                        *
+                      00004 ;*                    FEVEREIRO DE 2016                            *
+                      00005 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00006 
+                      00007 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00008 ;*                       NOME DO PROJETO                           *
+                      00009 ;*                           CLIENTE                               *
+                      00010 ;*         DESENVOLVIDO PELA MOSAICO ENGENHARIA E CONSULTORIA      *
+                      00011 ;*   VERSÃO: 1.0                           DATA: 17/06/03          *
+                      00012 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00013 ;*                     DESCRIÇÃO DO ARQUIVO                        *
+                      00014 ;*-----------------------------------------------------------------*
+                      00015 ;*   MODELO PARA O PIC 12F675                                      *
+                      00016 ;*                                                                 *
+                      00017 ;*                                                                 *
+                      00018 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00019 
+                      00020 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00021 ;*                     ARQUIVOS DE DEFINIÇÕES                      *
+                      00022 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00023 #INCLUDE <p12f675.inc>  ;ARQUIVO PADRÃO MICROCHIP PARA 12F675
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ; Build date : Nov 22 2017
+                      00005 ;  MPASM PIC12F675 processor include
+                      00006 ; 
+                      00007 ;  (c) Copyright 1999-2017 Microchip Technology, All rights reserved
+                      00008 ;==========================================================================
+                      00009 
+                      00367         LIST
+                      00024 
+2007   3FA4           00025         __CONFIG _BODEN_OFF & _CP_OFF & _PWRTE_ON & _WDT_OFF & _MCLRE_ON & _INTRC_OSC_NOCLKOUT
+                      00026 
+                      00027 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00028 ;*                    PAGINAÇÃO DE MEMÓRIA                         *
+                      00029 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00030 ;DEFINIÇÃO DE COMANDOS DE USUÁRIO PARA ALTERAÇÃO DA PÁGINA DE MEMÓRIA
+                      00031 #DEFINE BANK0   BCF STATUS,RP0  ;SETA BANK 0 DE MEMÓRIA
+                      00032 #DEFINE BANK1   BSF STATUS,RP0  ;SETA BANK 1 DE MAMÓRIA
+                      00033 
+                      00034 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00035 ;*                         VARIÁVEIS                               *
+                      00036 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00037 ; DEFINIÇÃO DOS NOMES E ENDEREÇOS DE TODAS AS VARIÁVEIS UTILIZADAS 
+                      00038 ; PELO SISTEMA
+                      00039 
+                      00040         CBLOCK  0x20    ;ENDEREÇO INICIAL DA MEMÓRIA DE
+                      00041                                         ;USUÁRIO
+  00000020            00042                 W_TEMP          ;REGISTRADORES TEMPORÁRIOS PARA USO
+  00000021            00043                 STATUS_TEMP     ;JUNTO ÀS INTERRUPÇÕES
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-13-2018  12:33:53         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00044 
+                      00045                 ;NOVAS VARIÁVEIS
+  00000022            00046                 CNTRL_NOTES     ;REGISTRADOR RESPONSÁVEL PELO CONTROLE DA NOTA QUE DEVERÁ SER TOCADA
+                      00047 
+                      00048         ENDC                    ;FIM DO BLOCO DE MEMÓRIA
+                      00049 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00050 ;*                        FLAGS INTERNOS                           *
+                      00051 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00052 ; DEFINIÇÃO DE TODOS OS FLAGS UTILIZADOS PELO SISTEMA
+                      00053 
+                      00054 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00055 ;*                         CONSTANTES                              *
+                      00056 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00057 ; DEFINIÇÃO DE TODAS AS CONSTANTES UTILIZADAS PELO SISTEMA
+                      00058 
+                      00059 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00060 ;*                           ENTRADAS                              *
+                      00061 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00062 ; DEFINIÇÃO DE TODOS OS PINOS QUE SERÃO UTILIZADOS COMO ENTRADA
+                      00063 ; RECOMENDAMOS TAMBÉM COMENTAR O SIGNIFICADO DE SEUS ESTADOS (0 E 1)
+                      00064 
+                      00065 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00066 ;*                           SAÍDAS                                *
+                      00067 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00068 ; DEFINIÇÃO DE TODOS OS PINOS QUE SERÃO UTILIZADOS COMO SAÍDA
+                      00069 ; RECOMENDAMOS TAMBÉM COMENTAR O SIGNIFICADO DE SEUS ESTADOS (0 E 1)
+                      00070 
+                      00071 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00072 ;*                       VETOR DE RESET                            *
+                      00073 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00074 
+0000                  00075         ORG     0x00                    ;ENDEREÇO INICIAL DE PROCESSAMENTO
+0000   280D           00076         GOTO    INICIO
+                      00077         
+                      00078 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00079 ;*                    INÍCIO DA INTERRUPÇÃO                        *
+                      00080 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00081 ; ENDEREÇO DE DESVIO DAS INTERRUPÇÕES. A PRIMEIRA TAREFA É SALVAR OS
+                      00082 ; VALORES DE "W" E "STATUS" PARA RECUPERAÇÃO FUTURA
+                      00083 
+0004                  00084         ORG     0x04                    ;ENDEREÇO INICIAL DA INTERRUPÇÃO
+0004   00A0           00085         MOVWF   W_TEMP          ;COPIA W PARA W_TEMP
+0005   0E03           00086         SWAPF   STATUS,W
+0006   00A1           00087         MOVWF   STATUS_TEMP     ;COPIA STATUS PARA STATUS_TEMP
+                      00088 
+                      00089 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00090 ;*                    ROTINA DE INTERRUPÇÃO                        *
+                      00091 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00092 ; AQUI SERÁ ESCRITA AS ROTINAS DE RECONHECIMENTO E TRATAMENTO DAS
+                      00093 ; INTERRUPÇÕES
+                      00094         
+                      00095 
+                      00096 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-13-2018  12:33:53         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00097 ;*                 ROTINA DE SAÍDA DA INTERRUPÇÃO                  *
+                      00098 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00099 ; OS VALORES DE "W" E "STATUS" DEVEM SER RECUPERADOS ANTES DE 
+                      00100 ; RETORNAR DA INTERRUPÇÃO
+                      00101 
+0007                  00102 SAI_INT
+0007   0E21           00103         SWAPF   STATUS_TEMP,W
+0008   0083           00104         MOVWF   STATUS          ;MOVE STATUS_TEMP PARA STATUS
+0009   0EA0           00105         SWAPF   W_TEMP,F
+000A   0E20           00106         SWAPF   W_TEMP,W        ;MOVE W_TEMP PARA W
+000B   0009           00107         RETFIE
+                      00108 
+                      00109 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00110 ;*                       ROTINAS E SUBROTINAS                      *
+                      00111 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00112 ; CADA ROTINA OU SUBROTINA DEVE POSSUIR A DESCRIÇÃO DE FUNCIONAMENTO
+                      00113 ; E UM NOME COERENTE ÀS SUAS FUNÇÕES.
+                      00114 
+000C                  00115 SUBROTINA1
+                      00116 
+                      00117         ;CORPO DA ROTINA
+                      00118 
+000C   0008           00119         RETURN
+                      00120 
+                      00121 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00122 ;*                     INICIO DO PROGRAMA                          *
+                      00123 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00124         
+000D                  00125 INICIO
+000D   1683           00126         BANK1                           ;ALTERA PARA O BANCO 1
+000E   3001           00127         MOVLW   B'00000001' ;CONFIGURA TODAS AS PORTAS DO GPIO (PINOS)
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000F   0085           00128         MOVWF   TRISIO          ;COMO SAÍDAS TIRANDO A GP0
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0010   019F           00129         CLRF    ANSEL           ;DEFINE PORTAS COMO Digital I/O
+0011   3003           00130         MOVLW   B'00000011'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0012   0081           00131         MOVWF   OPTION_REG      ;DEFINE OPÇÕES DE OPERAÇÃO [TMR0 -> 1:16]
+0013   3000           00132         MOVLW   B'00000000'
+0014   008B           00133         MOVWF   INTCON          ;DEFINE OPÇÕES DE INTERRUPÇÕES [DESTATIVA AS OPÇÃO DE INTERRUPÇÃO DO PAR
+                            A TMR0 E TMR1]
+                      00134 
+0015   1283           00135         BANK0                           ;RETORNA PARA O BANCO
+0016   3031           00136         MOVLW   B'00110001'     ;CONFIGURA O TM1, PRATICAMENTE O HABILITA E COLOCA O PRESCALE 1:8
+0017   0090           00137         MOVWF   T1CON
+0018   3007           00138         MOVLW   B'00000111'
+0019   0099           00139         MOVWF   CMCON           ;DEFINE O MODO DE OPERAÇÃO DO COMPARADOR ANALÓGICO
+                      00140 
+                      00141 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00142 ;*                     INICIALIZAÇÃO DAS VARIÁVEIS                 *
+                      00143 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00144         
+001A   3001           00145         MOVLW   B'00000001'     ;CONFIGURAÇÃO DO CONTROLE DE NOTAS. O BIT INDICARA QUAL DEVERÁ SER TOCAD
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-13-2018  12:33:53         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                            A, DA DIREITA PARA ESQUEDA, DO~SI
+001B   00A2           00146         MOVWF   CNTRL_NOTES
+                      00147 
+                      00148 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00149 ;*                     ROTINA PRINCIPAL                            *
+                      00150 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00151         
+001C                  00152 MAIN
+                      00153 
+                      00154         ;TESTA O SE O GP0 ESTA ATIVO OU NÃO, CASO ESTEJA, EXECUTA AS INTRUÇÕES PARA RESETAR AS CONGIRUAÇ
+                            ÕES
+                      00155         ;SE O GP0 FOR BAIXO, ENTÃO EXECUTA AS INSTRUÇÕES PARA TOCAR A ESCALA.
+                      00156         ;ESSAS INSTRUÇÕES SÃO EXECUTADAS NO MÁXIMO DEPIOS DE CADA NOTA.
+001C   1805           00157         BTFSC   GPIO, GP0
+001D   2820           00158         GOTO    GP0H_GP5L
+001E   2824           00159         GOTO    PLAY_SCALE
+                      00160         
+                      00161         
+                      00162 
+001F   281C           00163         GOTO    MAIN
+                      00164         
+                      00165 ;INSTRUÇÕES NECESSÁRIAS PARA "RESETAR" AS CONFIGURAÇÕES
+                      00166 ;COLOCA O GP5 PARA NÍVEL BAIXO, RECONFIGURA O REGISTRADOR DO CONTROLE DAS NOTAS
+                      00167 ;E RETORNA PARA MAIN
+0020                  00168 GP0H_GP5L
+0020   1285           00169         BCF     GPIO, GP5
+0021   3001           00170         MOVLW   B'00000001'     ;CONFIGURAÇÃO DO CONTROLE DE NOTAS. O BIT INDICARA QUAL DEVERÁ SER TOCAD
+                            A, DA DIREITA PARA ESQUEDA, DO~SI
+0022   00A2           00171         MOVWF   CNTRL_NOTES
+0023   281C           00172         GOTO    MAIN
+                      00173         
+                      00174 
+                      00175 ;AS INSTRUÇÕES ABAIXO SÃO EXECUTADAS A PARTIR DO REGISTRADOR DE CONTROLE DE NOTAS 
+                      00176 ;SE O REGISTRADOR TIVER O BIT "0" EM VALOR 1, A NOTA DÓ É TOCADA E ASSIM ACONTECE PARA TODAS AS OUTRAS
+                      00177 ;O ÚTLIMO BIT VAI INDICAR QUE A SEQUENCIA ACABOU E CHAMA A PARTE ONDE É RESETADA AS CONFIGURAÇÕES 
+                      00178 ;E RECOMEÇARÁ O LOOP DE NOTAS NOVAMENTE.
+0024                  00179 PLAY_SCALE
+0024   1822           00180         BTFSC   CNTRL_NOTES, 0 ;TOCA A NOTA DÓ
+0025   2834           00181         GOTO    DO
+0026   18A2           00182         BTFSC   CNTRL_NOTES, 1 ;TOCA A NOTA RÉ
+0027   284C           00183         GOTO    RE
+0028   1922           00184         BTFSC   CNTRL_NOTES, 2 ;TOCA A NOTA MI
+0029   2864           00185         GOTO    MI
+002A   19A2           00186         BTFSC   CNTRL_NOTES, 3 ;TOCA A NOTA FÁ
+002B   287C           00187         GOTO    FA
+002C   1A22           00188         BTFSC   CNTRL_NOTES, 4 ;TOCA A NOTA SOL
+002D   2894           00189         GOTO    SOL
+002E   1AA2           00190         BTFSC   CNTRL_NOTES, 5 ;TOCA A NOTA LÁ
+002F   28AC           00191         GOTO    LA
+0030   1B22           00192         BTFSC   CNTRL_NOTES, 6 ;TOCA A NOTA SI
+0031   28C4           00193         GOTO    SI
+0032   2820           00194         GOTO    GP0H_GP5L ;AO FIM, SE NÃO SATISFAZER, RESETA TUDO
+0033   281C           00195         GOTO    MAIN
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-13-2018  12:33:53         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00196 
+                      00197 ;NOTA DÓ 
+0034                  00198 DO      
+                      00199         ;DESCOLA O BIT PARA ESQUERDA, SINALIZANDO QUE A PRÓXIMA NOTA PODE SER TOCADA.
+Message[305]: Using default destination of 1 (file).
+0034   0DA2           00200         RLF     CNTRL_NOTES
+                      00201         
+                      00202         ;1011 11100101 = 3045
+0035   300B           00203         MOVLW   B'00001011'     ;CONFIGURA O TMR1 PARA CONTAR 500 MS.
+0036   008F           00204         MOVWF   TMR1H
+0037   30E5           00205         MOVLW   B'11100101'
+0038   008E           00206         MOVWF   TMR1L
+0039   100C           00207         BCF     PIR1, TMR1IF    ;RESET DA FLAG DE ESTOURO DO TMR1
+                      00208         
+003A   308B           00209         MOVLW   D'139' ;CONFIGURA TMR0 PARA A NOTA CONRRESPONTE, NO CASO A DÓ
+003B   0081           00210         MOVWF   TMR0
+003C   110B           00211         BCF     INTCON, T0IF
+                      00212         
+Warning[207]: Found label after column 1. (LOOP_NOTE_DO)
+003D                  00213         LOOP_NOTE_DO
+003D   180C           00214             BTFSC   PIR1, TMR1IF    ;TESTE DO ESTOURO DO TEMPO DE 500 MS
+003E   281C           00215             GOTO    MAIN            ;CASO TENHA ESTOURADO, VOLTA PRA MAIN PARA VERIFICAR SE O GP0 AINDA 
+                            É 0 E CHAMAR A PRÓXIMA NOTA
+003F   190B           00216             BTFSC   INTCON, T0IF    ;VERIFICA O TEMPO PARA OSCILAR O GP5, SE ESTOURAR, DEVE MUDAR PRA 1 
+                            OU 0, DEPENDENDO DO GP5. CASO NÃO ESTOURE, SEGURA O VALOR ATUAL
+0040   2843           00217             GOTO    HI_LO_DO
+0041   283D           00218             GOTO    LOOP_NOTE_DO
+                      00219         
+0042   281C           00220         GOTO    MAIN
+                      00221         
+                      00222 ;AS INSTRUÇÕES ABAIXO AJUDASTA O GP5 PRA 0 OU 1, DEPENDENDO DO SEU ESTADO ANTERIOR.     
+0043                  00223 HI_LO_DO        
+0043   3089           00224         MOVLW   D'137' ;CONFIGURA TMR0 PARA A NOTA CONRRESPONTE
+0044   0081           00225         MOVWF   TMR0
+0045   110B           00226         BCF     INTCON, T0IF
+                      00227         
+0046   1A85           00228         BTFSC   GPIO, GP5   ;TESTE DO GP5, CASO SEJA 1, CHAMA DO GOTO LO_X PARA ZERAR, SE NÃO, SETA GP5 
+                            PARA 1 E VOLTA  
+0047   284A           00229         GOTO    LO_DO
+0048   1685           00230         BSF     GPIO, GP5       
+0049   283D           00231         GOTO    LOOP_NOTE_DO
+004A                  00232 LO_DO
+004A   1285           00233         BCF     GPIO, GP5
+004B   283D           00234         GOTO    LOOP_NOTE_DO
+                      00235         
+                      00236 ;NOTA RE        
+004C                  00237 RE
+                      00238         ;DESCOLA O BIT PARA ESQUERDA, SINALIZANDO QUE A PRÓXIMA NOTA PODE SER TOCADA.
+Message[305]: Using default destination of 1 (file).
+004C   0DA2           00239         RLF     CNTRL_NOTES     
+                      00240         
+                      00241         ;1011 11001100 = 3020
+004D   300B           00242         MOVLW   B'00001011'     ;CONFIGURA O TMR1 PARA CONTAR 500 MS.
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-13-2018  12:33:53         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+004E   008F           00243         MOVWF   TMR1H
+004F   30E0           00244         MOVLW   B'11100000'
+0050   008E           00245         MOVWF   TMR1L
+0051   100C           00246         BCF     PIR1, TMR1IF    ;RESET DA FLAG DE ESTOURO DO TMR1
+                      00247         
+0052   3098           00248         MOVLW   D'152' ;CONFIGURA TMR0 PARA A NOTA CONRRESPONTE, NO CASO A RÉ
+0053   0081           00249         MOVWF   TMR0
+0054   110B           00250         BCF     INTCON, T0IF
+                      00251         
+Warning[207]: Found label after column 1. (LOOP_NOTE_RE)
+0055                  00252         LOOP_NOTE_RE
+0055   180C           00253             BTFSC   PIR1, TMR1IF    ;TESTE DO ESTOURO DO TEMPO DE 500 MS
+0056   281C           00254             GOTO    MAIN            ;CASO TENHA ESTOURADO, VOLTA PRA MAIN PARA VERIFICAR SE O GP0 AINDA 
+                            É 0 E CHAMAR A PRÓXIMA NOTA
+0057   190B           00255             BTFSC   INTCON, T0IF    ;VERIFICA O TEMPO PARA OSCILAR O GP5, SE ESTOURAR, DEVE MUDAR PRA 1 
+                            OU 0, DEPENDENDO DO GP5. CASO NÃO ESTOURE, SEGURA O VALOR ATUAL
+0058   285B           00256             GOTO    HI_LO_RE
+0059   2855           00257             GOTO    LOOP_NOTE_RE
+                      00258             
+005A   281C           00259         GOTO    MAIN
+                      00260 
+                      00261 ;AS INSTRUÇÕES ABAIXO AJUDASTA O GP5 PRA 0 OU 1, DEPENDENDO DO SEU ESTADO ANTERIOR.
+005B                  00262 HI_LO_RE        
+005B   3096           00263         MOVLW   D'150' ;CONFIGURA TMR0 PARA A NOTA CONRRESPONTE
+005C   0081           00264         MOVWF   TMR0
+005D   110B           00265         BCF     INTCON, T0IF
+                      00266         
+005E   1A85           00267         BTFSC   GPIO, GP5   ;TESTE DO GP5, CASO SEJA 1, CHAMA DO GOTO LO_X PARA ZERAR, SE NÃO, SETA GP5 
+                            PARA 1 E VOLTA
+005F   2862           00268         GOTO    LO_RE
+0060   1685           00269         BSF     GPIO, GP5       
+0061   2855           00270         GOTO    LOOP_NOTE_RE
+0062                  00271 LO_RE
+0062   1285           00272         BCF     GPIO, GP5
+0063   2855           00273         GOTO    LOOP_NOTE_RE
+                      00274         
+                      00275 ;NOTA MI 
+0064                  00276 MI
+                      00277         ;DESCOLA O BIT PARA ESQUERDA, SINALIZANDO QUE A PRÓXIMA NOTA PODE SER TOCADA.
+Message[305]: Using default destination of 1 (file).
+0064   0DA2           00278         RLF     CNTRL_NOTES     
+                      00279         
+                      00280         ;101111100000 = 3040
+0065   300B           00281         MOVLW   B'00001011'     ;CONFIGURA O TMR1 PARA CONTAR 500 MS.
+0066   008F           00282         MOVWF   TMR1H
+0067   30E0           00283         MOVLW   B'11100000'
+0068   008E           00284         MOVWF   TMR1L
+0069   100C           00285         BCF     PIR1, TMR1IF    ;RESET DA FLAG DE ESTOURO DO TMR1
+                      00286         
+006A   30A4           00287         MOVLW   D'164' ;CONFIGURA TMR0 PARA A NOTA CONRRESPONTE, NO CASO A MI
+006B   0081           00288         MOVWF   TMR0
+006C   110B           00289         BCF     INTCON, T0IF
+                      00290         
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-13-2018  12:33:53         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Warning[207]: Found label after column 1. (LOOP_NOTE_MI)
+006D                  00291         LOOP_NOTE_MI
+006D   180C           00292             BTFSC   PIR1, TMR1IF    ;TESTE DO ESTOURO DO TEMPO DE 500 MS
+006E   281C           00293             GOTO    MAIN            ;CASO TENHA ESTOURADO, VOLTA PRA MAIN PARA VERIFICAR SE O GP0 AINDA 
+                            É 0 E CHAMAR A PRÓXIMA NOTA
+006F   190B           00294             BTFSC   INTCON, T0IF    ;VERIFICA O TEMPO PARA OSCILAR O GP5, SE ESTOURAR, DEVE MUDAR PRA 1 
+                            OU 0, DEPENDENDO DO GP5. CASO NÃO ESTOURE, SEGURA O VALOR ATUAL
+0070   2873           00295             GOTO    HI_LO_MI
+0071   286D           00296             GOTO    LOOP_NOTE_MI
+                      00297             
+0072   281C           00298         GOTO    MAIN
+                      00299 
+                      00300 ;AS INSTRUÇÕES ABAIXO AJUDASTA O GP5 PRA 0 OU 1, DEPENDENDO DO SEU ESTADO ANTERIOR.
+0073                  00301 HI_LO_MI        
+0073   30A2           00302         MOVLW   D'162' ;CONFIGURA TMR0 PARA A NOTA CONRRESPONTE
+0074   0081           00303         MOVWF   TMR0
+0075   110B           00304         BCF     INTCON, T0IF
+                      00305         
+0076   1A85           00306         BTFSC   GPIO, GP5   ;TESTE DO GP5, CASO SEJA 1, CHAMA DO GOTO LO_X PARA ZERAR, SE NÃO, SETA GP5 
+                            PARA 1 E VOLTA
+0077   287A           00307         GOTO    LO_MI
+0078   1685           00308         BSF     GPIO, GP5       
+0079   286D           00309         GOTO    LOOP_NOTE_MI
+007A                  00310 LO_MI
+007A   1285           00311         BCF     GPIO, GP5
+007B   286D           00312         GOTO    LOOP_NOTE_MI
+                      00313         
+                      00314 
+                      00315 ;NOTA FA 
+007C                  00316 FA
+                      00317         ;DESCOLA O BIT PARA ESQUERDA, SINALIZANDO QUE A PRÓXIMA NOTA PODE SER TOCADA.
+Message[305]: Using default destination of 1 (file).
+007C   0DA2           00318         RLF     CNTRL_NOTES
+                      00319         
+                      00320         ;101111100000 = 3040
+007D   300B           00321         MOVLW   B'00001011'     ;CONFIGURA O TMR1 PARA CONTAR 500 MS.
+007E   008F           00322         MOVWF   TMR1H
+007F   30E0           00323         MOVLW   B'11100000'
+0080   008E           00324         MOVWF   TMR1L
+0081   100C           00325         BCF     PIR1, TMR1IF    ;RESET DA FLAG DE ESTOURO DO TMR1
+                      00326         
+0082   30A8           00327         MOVLW   D'168' ;CONFIGURA TMR0 PARA A NOTA CONRRESPONTE, NO CASO A FÁ
+0083   0081           00328         MOVWF   TMR0
+0084   110B           00329         BCF     INTCON, T0IF
+                      00330         
+Warning[207]: Found label after column 1. (LOOP_NOTE_FA)
+0085                  00331         LOOP_NOTE_FA
+0085   180C           00332             BTFSC   PIR1, TMR1IF    ;TESTE DO ESTOURO DO TEMPO DE 500 MS
+0086   281C           00333             GOTO    MAIN            ;CASO TENHA ESTOURADO, VOLTA PRA MAIN PARA VERIFICAR SE O GP0 AINDA 
+                            É 0 E CHAMAR A PRÓXIMA NOTA
+0087   190B           00334             BTFSC   INTCON, T0IF    ;VERIFICA O TEMPO PARA OSCILAR O GP5, SE ESTOURAR, DEVE MUDAR PRA 1 
+                            OU 0, DEPENDENDO DO GP5. CASO NÃO ESTOURE, SEGURA O VALOR ATUAL
+0088   288B           00335             GOTO    HI_LO_FA
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-13-2018  12:33:53         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0089   2885           00336             GOTO    LOOP_NOTE_FA
+                      00337             
+008A   281C           00338         GOTO    MAIN
+                      00339         
+                      00340 ;AS INSTRUÇÕES ABAIXO AJUDASTA O GP5 PRA 0 OU 1, DEPENDENDO DO SEU ESTADO ANTERIOR.
+008B                  00341 HI_LO_FA        
+008B   30A7           00342         MOVLW   D'167' ;CONFIGURA TMR0 PARA A NOTA CONRRESPONTE
+008C   0081           00343         MOVWF   TMR0
+008D   110B           00344         BCF     INTCON, T0IF
+                      00345         
+008E   1A85           00346         BTFSC   GPIO, GP5   ;TESTE DO GP5, CASO SEJA 1, CHAMA DO GOTO LO_X PARA ZERAR, SE NÃO, SETA GP5 
+                            PARA 1 E VOLTA
+008F   2892           00347         GOTO    LO_FA
+0090   1685           00348         BSF     GPIO, GP5       
+0091   2885           00349         GOTO    LOOP_NOTE_FA
+0092                  00350 LO_FA
+0092   1285           00351         BCF     GPIO, GP5
+0093   2885           00352         GOTO    LOOP_NOTE_FA
+                      00353         
+                      00354 ;NOTA SOL       
+0094                  00355 SOL
+                      00356         ;DESCOLA O BIT PARA ESQUERDA, SINALIZANDO QUE A PRÓXIMA NOTA PODE SER TOCADA.
+Message[305]: Using default destination of 1 (file).
+0094   0DA2           00357         RLF     CNTRL_NOTES
+                      00358         
+                      00359         ;101110111000 = 3000
+0095   300B           00360         MOVLW   B'00001011'     ;CONFIGURA O TMR1 PARA CONTAR 500 MS.
+0096   008F           00361         MOVWF   TMR1H
+0097   30B8           00362         MOVLW   B'10111000'
+0098   008E           00363         MOVWF   TMR1L
+0099   100C           00364         BCF     PIR1, TMR1IF    ;RESET DA FLAG DE ESTOURO DO TMR1
+                      00365         
+009A   30B3           00366         MOVLW   D'179' ;CONFIGURA TMR0 PARA A NOTA CONRRESPONTE, NO CASO A SOL
+009B   0081           00367         MOVWF   TMR0
+009C   110B           00368         BCF     INTCON, T0IF
+                      00369         
+Warning[207]: Found label after column 1. (LOOP_NOTE_SOL)
+009D                  00370         LOOP_NOTE_SOL
+009D   180C           00371             BTFSC   PIR1, TMR1IF    ;TESTE DO ESTOURO DO TEMPO DE 500 MS
+009E   281C           00372             GOTO    MAIN            ;CASO TENHA ESTOURADO, VOLTA PRA MAIN PARA VERIFICAR SE O GP0 AINDA 
+                            É 0 E CHAMAR A PRÓXIMA NOTA
+009F   190B           00373             BTFSC   INTCON, T0IF    ;VERIFICA O TEMPO PARA OSCILAR O GP5, SE ESTOURAR, DEVE MUDAR PRA 1 
+                            OU 0, DEPENDENDO DO GP5. CASO NÃO ESTOURE, SEGURA O VALOR ATUAL
+00A0   28A3           00374             GOTO    HI_LO_SOL
+00A1   289D           00375             GOTO    LOOP_NOTE_SOL
+                      00376             
+00A2   281C           00377         GOTO    MAIN
+                      00378         
+                      00379 ;AS INSTRUÇÕES ABAIXO AJUDASTA O GP5 PRA 0 OU 1, DEPENDENDO DO SEU ESTADO ANTERIOR.
+00A3                  00380 HI_LO_SOL
+00A3   30B1           00381         MOVLW   D'177' ;CONFIGURA TMR0 PARA A NOTA CONRRESPONTE
+00A4   0081           00382         MOVWF   TMR0
+00A5   110B           00383         BCF     INTCON, T0IF
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-13-2018  12:33:53         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00384         
+00A6   1A85           00385         BTFSC   GPIO, GP5   ;TESTE DO GP5, CASO SEJA 1, CHAMA DO GOTO LO_X PARA ZERAR, SE NÃO, SETA GP5 
+                            PARA 1 E VOLTA
+00A7   28AA           00386         GOTO    LO_SOL
+00A8   1685           00387         BSF     GPIO, GP5       
+00A9   289D           00388         GOTO    LOOP_NOTE_SOL
+00AA                  00389 LO_SOL
+00AA   1285           00390         BCF     GPIO, GP5
+00AB   289D           00391         GOTO    LOOP_NOTE_SOL
+                      00392         
+                      00393 ;NOTA LA
+00AC                  00394 LA
+                      00395         ;DESCOLA O BIT PARA ESQUERDA, SINALIZANDO QUE A PRÓXIMA NOTA PODE SER TOCADA.
+Message[305]: Using default destination of 1 (file).
+00AC   0DA2           00396         RLF     CNTRL_NOTES
+                      00397         
+                      00398         ;1011 11100000 = 3040
+00AD   300B           00399         MOVLW   B'00001011'     ;CONFIGURA O TMR1 PARA CONTAR 500 MS.
+00AE   008F           00400         MOVWF   TMR1H
+00AF   30E0           00401         MOVLW   B'11100000'
+00B0   008E           00402         MOVWF   TMR1L
+00B1   100C           00403         BCF     PIR1, TMR1IF    ;RESET DA FLAG DE ESTOURO DO TMR1
+                      00404         
+00B2   30BC           00405         MOVLW   D'188' ;CONFIGURA TMR0 PARA A NOTA CONRRESPONTE, NO CASO A LÁ
+00B3   0081           00406         MOVWF   TMR0
+00B4   110B           00407         BCF     INTCON, T0IF
+                      00408         
+Warning[207]: Found label after column 1. (LOOP_NOTE_LA)
+00B5                  00409         LOOP_NOTE_LA
+00B5   180C           00410             BTFSC   PIR1, TMR1IF    ;TESTE DO ESTOURO DO TEMPO DE 500 MS
+00B6   281C           00411             GOTO    MAIN            ;CASO TENHA ESTOURADO, VOLTA PRA MAIN PARA VERIFICAR SE O GP0 AINDA 
+                            É 0 E CHAMAR A PRÓXIMA NOTA
+00B7   190B           00412             BTFSC   INTCON, T0IF    ;VERIFICA O TEMPO PARA OSCILAR O GP5, SE ESTOURAR, DEVE MUDAR PRA 1 
+                            OU 0, DEPENDENDO DO GP5. CASO NÃO ESTOURE, SEGURA O VALOR ATUAL
+00B8   28BB           00413             GOTO    HI_LO_LA
+00B9   28B5           00414             GOTO    LOOP_NOTE_LA
+                      00415             
+00BA   281C           00416         GOTO    MAIN
+                      00417         
+                      00418 ;AS INSTRUÇÕES ABAIXO AJUDASTA O GP5 PRA 0 OU 1, DEPENDENDO DO SEU ESTADO ANTERIOR.
+00BB                  00419 HI_LO_LA        
+00BB   30BA           00420         MOVLW   D'186' ;CONFIGURA TMR0 PARA A NOTA CONRRESPONTE
+00BC   0081           00421         MOVWF   TMR0
+00BD   110B           00422         BCF     INTCON, T0IF
+                      00423         
+00BE   1A85           00424         BTFSC   GPIO, GP5   ;TESTE DO GP5, CASO SEJA 1, CHAMA DO GOTO LO_X PARA ZERAR, SE NÃO, SETA GP5 
+                            PARA 1 E VOLTA
+00BF   28C2           00425         GOTO    LO_LA
+00C0   1685           00426         BSF     GPIO, GP5       
+00C1   28B5           00427         GOTO    LOOP_NOTE_LA
+00C2                  00428 LO_LA
+00C2   1285           00429         BCF     GPIO, GP5
+00C3   28B5           00430         GOTO    LOOP_NOTE_LA
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-13-2018  12:33:53         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00431         
+                      00432 ;NOTA SI        
+00C4                  00433 SI
+                      00434         ;DESCOLA O BIT PARA ESQUERDA, SINALIZANDO QUE A PRÓXIMA NOTA PODE SER TOCADA.
+Message[305]: Using default destination of 1 (file).
+00C4   0DA2           00435         RLF     CNTRL_NOTES
+                      00436         
+                      00437         ;1011 11100000 = 3040
+00C5   300B           00438         MOVLW   B'00001011'     ;CONFIGURA O TMR1 PARA CONTAR 500 MS.
+00C6   008F           00439         MOVWF   TMR1H
+00C7   30E0           00440         MOVLW   B'11100000'
+00C8   008E           00441         MOVWF   TMR1L
+00C9   100C           00442         BCF     PIR1, TMR1IF    ;RESET DA FLAG DE ESTOURO DO TMR1
+                      00443         
+00CA   30C3           00444         MOVLW   D'195' ;CONFIGURA TMR0 PARA A NOTA CONRRESPONTE, NO CASO A SÍ
+00CB   0081           00445         MOVWF   TMR0
+00CC   110B           00446         BCF     INTCON, T0IF
+                      00447         
+Warning[207]: Found label after column 1. (LOOP_NOTE_SI)
+00CD                  00448         LOOP_NOTE_SI
+00CD   180C           00449             BTFSC   PIR1, TMR1IF    ;TESTE DO ESTOURO DO TEMPO DE 500 MS
+00CE   281C           00450             GOTO    MAIN            ;CASO TENHA ESTOURADO, VOLTA PRA MAIN PARA VERIFICAR SE O GP0 AINDA 
+                            É 0 E CHAMAR A PRÓXIMA NOTA
+00CF   190B           00451             BTFSC   INTCON, T0IF    ;VERIFICA O TEMPO PARA OSCILAR O GP5, SE ESTOURAR, DEVE MUDAR PRA 1 
+                            OU 0, DEPENDENDO DO GP5. CASO NÃO ESTOURE, SEGURA O VALOR ATUAL
+00D0   28D3           00452             GOTO    HI_LO_SI
+00D1   28CD           00453             GOTO    LOOP_NOTE_SI
+                      00454             
+00D2   281C           00455         GOTO    MAIN
+                      00456 
+                      00457 ;AS INSTRUÇÕES ABAIXO AJUDASTA O GP5 PRA 0 OU 1, DEPENDENDO DO SEU ESTADO ANTERIOR.
+00D3                  00458 HI_LO_SI        
+00D3   30C1           00459         MOVLW   D'193' ;CONFIGURA TMR0 PARA A NOTA CONRRESPONTE
+00D4   0081           00460         MOVWF   TMR0
+00D5   110B           00461         BCF     INTCON, T0IF
+                      00462         
+00D6   1A85           00463         BTFSC   GPIO, GP5   ;TESTE DO GP5, CASO SEJA 1, CHAMA DO GOTO LO_X PARA ZERAR, SE NÃO, SETA GP5 
+                            PARA 1 E VOLTA
+00D7   28DA           00464         GOTO    LO_SI
+00D8   1685           00465         BSF     GPIO, GP5       
+00D9   28CD           00466         GOTO    LOOP_NOTE_SI
+00DA                  00467 LO_SI
+00DA   1285           00468         BCF     GPIO, GP5
+00DB   28CD           00469         GOTO    LOOP_NOTE_SI
+                      00470 
+                      00471         
+                      00472 
+                      00473 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00474 ;*                       FIM DO PROGRAMA                           *
+                      00475 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00476 
+                      00477         END
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-13-2018  12:33:53         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ADCON0                            0000001F
+ADCS0                             00000004
+ADCS1                             00000005
+ADCS2                             00000006
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+ANS0                              00000000
+ANS1                              00000001
+ANS2                              00000002
+ANS3                              00000003
+ANSEL                             0000009F
+BANK0                             BCF STATUS,RP0
+BANK1                             BSF STATUS,RP0
+C                                 00000000
+CAL0                              00000002
+CAL1                              00000003
+CAL2                              00000004
+CAL3                              00000005
+CAL4                              00000006
+CAL5                              00000007
+CHS0                              00000002
+CHS1                              00000003
+CINV                              00000004
+CIS                               00000003
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             00000019
+CMIE                              00000003
+CMIF                              00000003
+CNTRL_NOTES                       00000022
+COUT                              00000006
+DC                                00000001
+DO                                00000034
+EEADR                             0000009B
+EECON1                            0000009C
+EECON2                            0000009D
+EEDAT                             0000009A
+EEDATA                            0000009A
+EEIE                              00000007
+EEIF                              00000007
+F                                 00000001
+FA                                0000007C
+FSR                               00000004
+GIE                               00000007
+GO                                00000001
+GO_DONE                           00000001
+GO_NOT_DONE                       00000001
+GP0                               00000000
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-13-2018  12:33:53         PAGE 12
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+GP0H_GP5L                         00000020
+GP1                               00000001
+GP2                               00000002
+GP3                               00000003
+GP4                               00000004
+GP5                               00000005
+GPIE                              00000003
+GPIF                              00000000
+GPIO                              00000005
+GPIO0                             00000000
+GPIO1                             00000001
+GPIO2                             00000002
+GPIO3                             00000003
+GPIO4                             00000004
+GPIO5                             00000005
+HI_LO_DO                          00000043
+HI_LO_FA                          0000008B
+HI_LO_LA                          000000BB
+HI_LO_MI                          00000073
+HI_LO_RE                          0000005B
+HI_LO_SI                          000000D3
+HI_LO_SOL                         000000A3
+INDF                              00000000
+INICIO                            0000000D
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IOC                               00000096
+IOC0                              00000000
+IOC1                              00000001
+IOC2                              00000002
+IOC3                              00000003
+IOC4                              00000004
+IOC5                              00000005
+IOCB                              00000096
+IOCB0                             00000000
+IOCB1                             00000001
+IOCB2                             00000002
+IOCB3                             00000003
+IOCB4                             00000004
+IOCB5                             00000005
+IRP                               00000007
+LA                                000000AC
+LOOP_NOTE_DO                      0000003D
+LOOP_NOTE_FA                      00000085
+LOOP_NOTE_LA                      000000B5
+LOOP_NOTE_MI                      0000006D
+LOOP_NOTE_RE                      00000055
+LOOP_NOTE_SI                      000000CD
+LOOP_NOTE_SOL                     0000009D
+LO_DO                             0000004A
+LO_FA                             00000092
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-13-2018  12:33:53         PAGE 13
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+LO_LA                             000000C2
+LO_MI                             0000007A
+LO_RE                             00000062
+LO_SI                             000000DA
+LO_SOL                            000000AA
+MAIN                              0000001C
+MI                                00000064
+NOT_BOD                           00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000001
+NOT_GPPU                          00000007
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+OPTION_REG                        00000081
+OSCCAL                            00000090
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+PLAY_SCALE                        00000024
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RD                                00000000
+RE                                0000004C
+RP0                               00000005
+RP1                               00000006
+SAI_INT                           00000007
+SI                                000000C4
+SOL                               00000094
+STATUS                            00000003
+STATUS_TEMP                       00000021
+SUBROTINA1                        0000000C
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1IE                              00000000
+T1IF                              00000000
+T1OSCEN                           00000003
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-13-2018  12:33:53         PAGE 14
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TMR1GE                            00000006
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TRISIO                            00000085
+TRISIO0                           00000000
+TRISIO1                           00000001
+TRISIO2                           00000002
+TRISIO3                           00000003
+TRISIO4                           00000004
+TRISIO5                           00000005
+VCFG                              00000006
+VR0                               00000000
+VR1                               00000001
+VR2                               00000002
+VR3                               00000003
+VRCON                             00000099
+VREN                              00000007
+VRR                               00000005
+W                                 00000000
+WPU                               00000095
+WPU0                              00000000
+WPU1                              00000001
+WPU2                              00000002
+WPU4                              00000004
+WPU5                              00000005
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+W_TEMP                            00000020
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_OFF                           00003FFF
+_CP_ON                            00003F7F
+_DEVID1                           00002006
+_EC_OSC                           00003FFB
+_EXTRC_OSC_CLKOUT                 00003FFF
+_EXTRC_OSC_NOCLKOUT               00003FFE
+_FOSC_EC                          00003FFB
+_FOSC_EXTRCCLK                    00003FFF
+_FOSC_EXTRCIO                     00003FFE
+_FOSC_HS                          00003FFA
+_FOSC_INTRCCLK                    00003FFD
+_FOSC_INTRCIO                     00003FFC
+_FOSC_LP                          00003FF8
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-13-2018  12:33:53         PAGE 15
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_FOSC_XT                          00003FF9
+_HS_OSC                           00003FFA
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_INTRC_OSC_CLKOUT                 00003FFD
+_INTRC_OSC_NOCLKOUT               00003FFC
+_LP_OSC                           00003FF8
+_MCLRE_OFF                        00003FDF
+_MCLRE_ON                         00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FEF
+_WDTE_OFF                         00003FF7
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FF7
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FF9
+__12F675                          00000001
+__DEBUG                           
+__MPLAB_DEBUGGER_SIMULATOR        1
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X---XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXX---- ---------------- ----------------
+2000 : -------X-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   217
+Program Memory Words Free:   807
+
+
+Errors   :     0
+Warnings :     7 reported,     0 suppressed
+Messages :    10 reported,     0 suppressed
+
+

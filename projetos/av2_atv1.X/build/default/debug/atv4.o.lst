@@ -1,0 +1,680 @@
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-19-2018  15:58:40         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00002 ;*              MODIFICAÇÕES PARA USO COM 12F675                   *
+                      00003 ;*                FEITAS PELO PROF. MARDSON                        *
+                      00004 ;*                    FEVEREIRO DE 2014                            *
+                      00005 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00006 
+                      00007 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00008 ;*                       NOME DO PROJETO                           *
+                      00009 ;*                           CLIENTE                               *
+                      00010 ;*         DESENVOLVIDO PELA MOSAICO ENGENHARIA E CONSULTORIA      *
+                      00011 ;*   VERSÃO: 1.0                           DATA: 17/06/03          *
+                      00012 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00013 ;*                     DESCRIÇÃO DO ARQUIVO                        *
+                      00014 ;*-----------------------------------------------------------------*
+                      00015 ;*   MODELO PARA O PIC 12F675                                      *
+                      00016 ;*                                                                 *
+                      00017 ;*                                                                 *
+                      00018 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00019 
+                      00020 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00021 ;*                     ARQUIVOS DE DEFINIÇÕES                      *
+                      00022 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00023 #INCLUDE <p12f675.inc>  ;ARQUIVO PADRÃO MICROCHIP PARA 12F675
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ; Build date : Nov 22 2017
+                      00005 ;  MPASM PIC12F675 processor include
+                      00006 ; 
+                      00007 ;  (c) Copyright 1999-2017 Microchip Technology, All rights reserved
+                      00008 ;==========================================================================
+                      00009 
+                      00367         LIST
+                      00024 
+2007   3FA4           00025         __CONFIG _BODEN_OFF & _CP_OFF & _PWRTE_ON & _WDT_OFF & _MCLRE_ON & _INTRC_OSC_NOCLKOUT
+                      00026 
+                      00027 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00028 ;*                    PAGINAÇÃO DE MEMÓRIA                         *
+                      00029 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00030 ;DEFINIÇÃO DE COMANDOS DE USUÁRIO PARA ALTERAÇÃO DA PÁGINA DE MEMÓRIA
+                      00031 #DEFINE BANK0   BCF STATUS,RP0  ;SETA BANK 0 DE MEMÓRIA
+                      00032 #DEFINE BANK1   BSF STATUS,RP0  ;SETA BANK 1 DE MAMÓRIA
+                      00033 
+                      00034 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00035 ;*                         VARIÁVEIS                               *
+                      00036 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00037 ; DEFINIÇÃO DOS NOMES E ENDEREÇOS DE TODAS AS VARIÁVEIS UTILIZADAS 
+                      00038 ; PELO SISTEMA
+                      00039 
+                      00040         CBLOCK  0x20    ;ENDEREÇO INICIAL DA MEMÓRIA DE
+                      00041                                         ;USUÁRIO
+  00000020            00042                 W_TEMP          ;REGISTRADORES TEMPORÁRIOS PARA USO
+  00000021            00043                 STATUS_TEMP     ;JUNTO ÀS INTERRUPÇÕES
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-19-2018  15:58:40         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+  00000022            00044                 DADO            ;ARMAZENA O DADO PARA A EEPROM
+                      00045 
+                      00046                 ;NOVAS VARIÁVEIS
+  00000023            00047                 LIM_READ    ;CONTROLA QUANDO DE ELEMENTOS DA MEMÓRIA DEVE SER LIDO OU ESCRITO.
+  00000024            00048                 SWAP_ORD    ;AUXILA NA TROCAR DOS VALORES DE LUGAR NA ORDENÇÃO.
+  00000025            00049                 TEMP        ;TEMPORÁRIA, AUXILIAR...
+  00000026            00050                 TEMP_ADDR   ;VARIÁVEL QUE AUXILIA NA ORDENAÇÃO SEGURANDO O ENDREÇO DO QUE TIVER O MENOR 
+                            VALOR (TRABALHA EM CONJUNTO COM TEMP, NA ORDENAÇÃO)
+  00000027            00051                 ORD_ADDR    ;VARÍAVEL QUE QUARDA QUAL ENDEREÇO DO PONTEIRO VAI SER TROCADO AO FIM DE CAD
+                            A LOOP.
+  00000028            00052                 CRTL_LIM_READ; VARÍAVEL QUE CONTROLA A QUANTIDADE DE ELEMENTOS A CADA LOOP DEVERÁ SER LI
+                            DA
+                      00053 
+                      00054         ENDC                    ;FIM DO BLOCO DE MEMÓRIA
+                      00055 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00056 ;*                        FLAGS INTERNOS                           *
+                      00057 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00058 ; DEFINIÇÃO DE TODOS OS FLAGS UTILIZADOS PELO SISTEMA
+                      00059 
+                      00060 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00061 ;*                         CONSTANTES                              *
+                      00062 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00063 ; DEFINIÇÃO DE TODAS AS CONSTANTES UTILIZADAS PELO SISTEMA
+                      00064 ; INICIALIZAÇÃO DA EEPROM, DE ACORDO COM A DESCRIÇÃO NO ARQUIVO "Def_Rega_Formigas.inc"
+                      00065 
+                      00066 ;A PARTIR DO ENDEREÇO ZERO DA EEPROM, DADOS EM ORDEM ALEATÓRIA
+2100                  00067         ORG 0x2100
+2100   0089 001E 0039 00068         DE      0X89,0X1E,0X39,0X9F,0XC2,0X0C,0XAB,0X33,0X63,0XD3,0X95,0X7B,0X38,0XD6,0X1E,0X48
+       009F 00C2 000C 
+       00AB 0033 0063 
+       00D3 0095 007B 
+       0038 00D6 001E 
+       0048 
+2110   00DB 00D8 0086 00069         DE      0XDB,0XD8,0X86,0XFD,0XA5,0XFC,0X0C,0XBE,0X68,0X9B,0XD9,0X10,0XD8,0XEC,0X90,0X91
+       00FD 00A5 00FC 
+       000C 00BE 0068 
+       009B 00D9 0010 
+       00D8 00EC 0090 
+       0091 
+2120   00AA 00BB 00CC 00070         DE      0XAA,0XBB,0XCC,0XDD,0XEE,0XF1,0XC9,0X77
+       00DD 00EE 00F1 
+       00C9 0077 
+                      00071 
+                      00072 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00073 ;*                           ENTRADAS                              *
+                      00074 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00075 ; DEFINIÇÃO DE TODOS OS PINOS QUE SERÃO UTILIZADOS COMO ENTRADA
+                      00076 ; RECOMENDAMOS TAMBÉM COMENTAR O SIGNIFICADO DE SEUS ESTADOS (0 E 1)
+                      00077 
+                      00078 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00079 ;*                           SAÍDAS                                *
+                      00080 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00081 ; DEFINIÇÃO DE TODOS OS PINOS QUE SERÃO UTILIZADOS COMO SAÍDA
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-19-2018  15:58:40         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00082 ; RECOMENDAMOS TAMBÉM COMENTAR O SIGNIFICADO DE SEUS ESTADOS (0 E 1)
+                      00083 
+                      00084 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00085 ;*                       VETOR DE RESET                            *
+                      00086 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00087 
+0000                  00088         ORG     0x00                    ;ENDEREÇO INICIAL DE PROCESSAMENTO
+0000   2825           00089         GOTO    INICIO
+                      00090         
+                      00091 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00092 ;*                    INÍCIO DA INTERRUPÇÃO                        *
+                      00093 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00094 ; ENDEREÇO DE DESVIO DAS INTERRUPÇÕES. A PRIMEIRA TAREFA É SALVAR OS
+                      00095 ; VALORES DE "W" E "STATUS" PARA RECUPERAÇÃO FUTURA
+                      00096 
+0004                  00097         ORG     0x04                    ;ENDEREÇO INICIAL DA INTERRUPÇÃO
+0004   00A0           00098         MOVWF   W_TEMP          ;COPIA W PARA W_TEMP
+0005   0E03           00099         SWAPF   STATUS,W
+0006   00A1           00100         MOVWF   STATUS_TEMP     ;COPIA STATUS PARA STATUS_TEMP
+                      00101 
+                      00102 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00103 ;*                    ROTINA DE INTERRUPÇÃO                        *
+                      00104 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00105 ; AQUI SERÁ ESCRITA AS ROTINAS DE RECONHECIMENTO E TRATAMENTO DAS
+                      00106 ; INTERRUPÇÕES
+                      00107 
+                      00108 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00109 ;*                 ROTINA DE SAÍDA DA INTERRUPÇÃO                  *
+                      00110 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00111 ; OS VALORES DE "W" E "STATUS" DEVEM SER RECUPERADOS ANTES DE 
+                      00112 ; RETORNAR DA INTERRUPÇÃO
+                      00113 
+0007                  00114 SAI_INT
+0007   0E21           00115         SWAPF   STATUS_TEMP,W
+0008   0083           00116         MOVWF   STATUS          ;MOVE STATUS_TEMP PARA STATUS
+0009   0EA0           00117         SWAPF   W_TEMP,F
+000A   0E20           00118         SWAPF   W_TEMP,W        ;MOVE W_TEMP PARA W
+000B   0009           00119         RETFIE
+                      00120 
+                      00121 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00122 ;*                       ROTINAS E SUBROTINAS                      *
+                      00123 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00124 ; CADA ROTINA OU SUBROTINA DEVE POSSUIR A DESCRIÇÃO DE FUNCIONAMENTO
+                      00125 ; E UM NOME COERENTE ÀS SUAS FUNÇÕES.
+000C                  00126 LE_EEPROM
+                      00127 ;LER DADO DA EEPROM, CUJO ENDEREÇO É INDICADO EM W
+                      00128 ;DADO LIDO RETORNA EM W
+000C   397F           00129         ANDLW   .127            ;LIMITA ENDEREÇO MAX. 127
+000D   1683           00130         BANK1                           ;ACESSO VIA BANK 1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000E   009B           00131         MOVWF   EEADR           ;INDICA O END. DE LEITURA
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+000F   141C           00132         BSF             EECON1,RD       ;INICIA O PROCESSO DE LEITURA
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-19-2018  15:58:40         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0010   081A           00133         MOVF    EEDATA,W        ;COLOCA DADO LIDO EM W
+0011   1283           00134         BANK0                           ;POSICIONA PARA BANK 0
+0012   0008           00135         RETURN
+                      00136 
+0013                  00137 GRAVA_EEPROM
+                      00138 ;ESCREVE DADO (DADO) NA EEPROM, CUJO ENDEREÇO É INDICADO EM W
+0013   397F           00139         ANDLW   .127            ;LIMITA ENDEREÇO MAX. 127
+0014   1683           00140         BANK1                           ;ACESSO VIA BANK 1
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0015   009B           00141         MOVWF   EEADR
+0016   0822           00142         MOVF    DADO,W
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0017   009A           00143         MOVWF   EEDATA
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0018   151C           00144         BSF             EECON1,WREN ;HABILITA ESCRITA
+0019   138B           00145         BCF             INTCON,GIE      ;DESLIGA INTERRUPÇÕES
+001A   3055           00146         MOVLW   B'01010101'     ;DESBLOQUEIA ESCRITA
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001B   009D           00147         MOVWF   EECON2          ;
+001C   30AA           00148         MOVLW   B'10101010'     ;DESBLOQUEIA ESCRITA
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001D   009D           00149         MOVWF   EECON2          ;
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001E   149C           00150         BSF             EECON1,WR ;INICIA A ESCRITA
+001F                  00151 AGUARDA
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+001F   189C           00152         BTFSC   EECON1,WR ;TERMINOU?
+0020   281F           00153         GOTO    AGUARDA
+0021   178B           00154         BSF             INTCON,GIE ;HABILITA INTERRUPÇÕES
+0022   1283           00155         BANK0                           ;POSICIONA PARA BANK 0
+0023   0008           00156         RETURN
+                      00157 
+0024                  00158 SUBROTINA1
+                      00159 
+                      00160         ;CORPO DA ROTINA
+                      00161 
+0024   0008           00162         RETURN
+                      00163 
+                      00164 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00165 ;*                     INICIO DO PROGRAMA                          *
+                      00166 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00167         
+0025                  00168 INICIO
+0025   1683           00169         BANK1                           ;ALTERA PARA O BANCO 1
+0026   3000           00170         MOVLW   B'00000000' ;CONFIGURA TODAS AS PORTAS DO GPIO (PINOS)
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0027   0085           00171         MOVWF   TRISIO          ;COMO SAÍDAS
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0028   019F           00172         CLRF    ANSEL           ;DEFINE PORTAS COMO Digital I/O
+0029   3000           00173         MOVLW   B'00000000'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+002A   0081           00174         MOVWF   OPTION_REG      ;DEFINE OPÇÕES DE OPERAÇÃO
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-19-2018  15:58:40         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+002B   3000           00175         MOVLW   B'00000000'
+002C   008B           00176         MOVWF   INTCON          ;DEFINE OPÇÕES DE INTERRUPÇÕES
+002D   1283           00177         BANK0                           ;RETORNA PARA O BANCO
+002E   3007           00178         MOVLW   B'00000111'
+002F   0099           00179         MOVWF   CMCON           ;DEFINE O MODO DE OPERAÇÃO DO COMPARADOR ANALÓGICO
+                      00180 
+                      00181 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00182 ;*                     INICIALIZAÇÃO DAS VARIÁVEIS                 *
+                      00183 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+0030   0185           00184         CLRF    GPIO
+                      00185         ;COMO DEVEMOS SEMPRE LER 40 ELEMENTOS DA MEMÓRIA, A VARIÁVEL É INCIALIZADA COM VALOR DE 40
+0031   3028           00186         MOVLW   D'40'
+0032   00A3           00187         MOVWF   LIM_READ
+0033   00A8           00188         MOVWF   CRTL_LIM_READ
+                      00189 
+                      00190 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00191 ;*                     ROTINA PRINCIPAL                            *
+                      00192 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+0034                  00193 MAIN
+                      00194 
+                      00195         ;CORPO DA ROTINA PRINCIPAL
+                      00196                 
+                      00197         ; ***  INCIO DE LEITURA DOS DADOS DA EEPROM ***
+0034   3030           00198         MOVLW   0x30    ;MOVE O VALOR 0x30 PARA O W, E ASSIM SET O FSR PARA O ENDERÇO
+0035   0084           00199         MOVWF   FSR     ;FSR APONTA PARA O ENDERÇO 0x30
+0036   3000           00200         MOVLW   0x00    ;MOVE O VALOR 0, PARA O TEMP, QUE IRA TRABALHAR O ENDEREÇO NA MEMÓRIA EEPROM, NO
+                             QUAL INICIA DO ZERO.
+0037   00A5           00201         MOVWF   TEMP    ;NO MOMENTO, A VARIÁVEL IRA TRABALHAR NA MANIPULAÇÃO DO ENDREÇO NA MEMÓRIA EEPRO
+                            M
+                      00202         
+0038   200C           00203 NEXT    CALL    LE_EEPROM
+0039   0080           00204         MOVWF   INDF    ;MOVE DA EEPROM PRA O ENDEREÇO DA RAM EM QUESTÃO
+Message[305]: Using default destination of 1 (file).
+003A   0A84           00205         INCF    FSR     ;ATUALIZA O PONTEIRO PARA O PRÓXIMO ENDEREÇO
+Message[305]: Using default destination of 1 (file).
+003B   0AA5           00206         INCF    TEMP    ;ATUALIZA O PRÓXIMO ENDEREÇO PRA EEPROM TAMBÉM.
+003C   0825           00207         MOVFW   TEMP    ;JOGA O VALOR PRA WORK, ASSIM A FUNÇÃO LE_EEPROM VAI SABER DE ONDE ENDEREÇO LER
+003D   0BA3           00208         DECFSZ  LIM_READ,F  ;CONTROLA QUANDO DEVE SER LIDO, QUANDO CHEGAR AO ZERO DEVE  SAIR.
+003E   2838           00209         GOTO    NEXT
+                      00210         
+                      00211         
+                      00212         ; *** INCIO DAS ROTINAS PARA ORDENAÇÃO ***
+                      00213         ; *** INCIALIZAÇÕES PARA O PRIMEIRO LOOP ***
+003F   1685           00214         BSF     GPIO,GP5    ;GP5 = 1
+0040   3030           00215         MOVLW   0x30        
+0041   00A7           00216         MOVWF   ORD_ADDR    ;SALVA O ENDREÇO DE QUAL VALOR VAI SER TROCADO AO FIM DE CADA LOOP, INCIALME
+                            NTE ESSE VALOR É O PRIMEIRO.
+0042   0084           00217         MOVWF   FSR         ;FSR -> 0x30
+0043   00A6           00218         MOVWF   TEMP_ADDR   ;ARMAZENA O ENDEREÇO DO PRIMERO ENDEREÇO, SERA A PRIMEIRA REFERENCIA. AUXILI
+                            ANDO NAS TROCAS E COMPARAÇÃO
+0044   0800           00219         MOVFW   INDF
+0045   00A5           00220         MOVWF   TEMP        ;ARMAZENA O VALOR DO PRIMEIRO ENDERAÇO DE REFERNECIA EM  TEMP
+0046   3027           00221         MOVLW   D'39'       ;VALOR A SER ARMAZENADO NO LIMITE DE LEITURA E NO CONTROLE. AQUI É UM A MENO
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-19-2018  15:58:40         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                            S, PORQUE O ALGORITMO JÁ INICIA DO SEGUNDO.
+0047   00A3           00222         MOVWF   LIM_READ    ;LIM_READ = 30d
+0048   00A8           00223         MOVWF   CRTL_LIM_READ
+                      00224         
+                      00225         
+                      00226         ;*** INICIO DA ORDENAÇÃO DE FATO ***
+Message[305]: Using default destination of 1 (file).
+0049   0A84           00227 ORDENAR INCF    FSR         ;NOS COMANDO ACIMA, ARMAZEMOS O VALOR DO PRIMERO EM VARIÁVEIS, ENTÃO AQUI IN
+                            CREMENTAMOS UMA, PRA PODER COMPARAR OS VALORES E SEGUIR ADIANTE
+004A   0825           00228         MOVFW   TEMP        ;MOVE-SE O VALOR DE TEMP PARA WORK, W = TEMP
+004B   0200           00229         SUBWF   INDF,W      ;SUBTRAI PARA SABER O MENOR; INDF - W(TEMP) = W
+004C   1C03           00230         BTFSS   STATUS,C    ;CASO O BIT DE CARRY, O BIT C, FOR IGUAL A ZERO, ENTÃO ACHOU ALGO MENOR QUE 
+                            O QUE TÁ EM TEMP E VAI ATUALIZÁ-LO 
+004D   2851           00231         GOTO    ACHOU_MENOR ;CHAMA ROTINA PARA ATUALIAR O TEMP E O TEMP_ADDR PARA O MENOR VALOR NO LOOP 
+                            ATUAL
+004E   0BA3           00232         DECFSZ  LIM_READ,F  ;CONTA QUANTOS ELEMENTOS FORAM VERIFICADOS, ELE SUBTRAI A CADA ELEMENTO, AO 
+                            ZERAR, TERMINAR O LOOP PARA O VALOR EM QUESTÃO
+004F   2849           00233         GOTO    ORDENAR     ;CASO NÃO TENHA ENCONTRADO NADA MENOR E NÃO TENHA TERMINADO DE ORDENADAR NO 
+                            MOMENTO, VOLTA AO LOOP
+0050   2857           00234         GOTO    TROCAR      ;SE CHEGOU AO FINAL DAS COMPARAÇÕES, VAI PARAR ROTINA DE ATUALZAR A LISTA DE
+                             ORDENAÇÃO
+                      00235 
+0051   0804           00236 ACHOU_MENOR     MOVFW   FSR         ;MOVE O VALOR ATUAL, QUE CORRESPONDE AO DO MENOR VALOR, PARA O W
+0052   00A6           00237                 MOVWF   TEMP_ADDR   ;ATUALIZA O TEMP_ADDR
+0053   0800           00238                 MOVFW   INDF        ;MOVE O VALOR APONTADO POR FSR
+0054   00A5           00239                 MOVWF   TEMP        ;ATUALIZA TEMP
+0055   0BA3           00240                 DECFSZ  LIM_READ,F  ;CONTA QUANTOS ELEMENTOS FORAM VERIFICADOS, ELE SUBTRAI A CADA ELEME
+                            NTO, AO ZERAR, TERMINAR O LOOP PARA O VALOR EM QUESTÃO
+0056   2849           00241                 GOTO    ORDENAR     ;VOLTA AO LOOP DE ORDENAÇÃO
+                      00242         
+0057   0827           00243 TROCAR  MOVFW   ORD_ADDR    ;MOVE O PARA W, O ENDEREÇO QUE VAI SER TROCADO 
+0058   0084           00244         MOVWF   FSR         ;ATUALIZA FSR PARA O ENDREÇO
+0059   0800           00245         MOVFW   INDF        ;MOVERÁ O VALOR PARA UMA VARIÁVEL DE AJUDA
+005A   00A4           00246         MOVWF   SWAP_ORD    ;ARMAZENA O VALOR PARA SER COLOCADO EM OUTRO LUGAR MAIS A FRENTE, ESPECIFICA
+                            MENTE, NO ENDEREÇO DE TEMPO.
+005B   0825           00247         MOVFW   TEMP        ;ATUALIZANDO O NOVO VALOR DO ENDEREÇO ORD_ADDR PARA O MENOR ARMAZENADO EM TE
+                            MP
+005C   0080           00248         MOVWF   INDF        ;ATUAZIZA O VALOR NOVO PARA O ENDREÇO QUE IRA SER SALVO
+                      00249         
+005D   0826           00250         MOVFW   TEMP_ADDR   ;VAI AO ENDERÇO ONDE A VARIÁVEL DO ENDEREÇO ORD_ADDR VAI SER SALVA AGORA.
+005E   0084           00251         MOVWF   FSR         ;ATUALIZA O ENDEREÇO.
+005F   0824           00252         MOVFW   SWAP_ORD    ;MOVE O SWAP_ORD
+0060   0080           00253         MOVWF   INDF        ;SALVA-O EM SUA NOVA POSIÇÃO, POIS ELE É MAIOR QUE O QUE ESTAVA EM TEMP.
+                      00254         
+                      00255         
+Message[305]: Using default destination of 1 (file).
+0061   0AA7           00256         INCF    ORD_ADDR    ;INCREMENTA UM PARA O ORD_ADDR PARA NOVA REFERENCIA, POIS ELE SERÁ O PRÓXIMO
+                             QUE PODERÁ MUDAR DE LUGAR.
+0062   0827           00257         MOVFW   ORD_ADDR    ;SALVA-O NO FSR E TEMP_ADDR QUE VÃO SER AS PRÓXIMAS REFERENCIAS NA ORDENAÇÃO
+0063   00A6           00258         MOVWF   TEMP_ADDR
+0064   0084           00259         MOVWF   FSR     
+0065   0800           00260         MOVFW   INDF        ;MOVE O NOVO VALOR DE REFERENCIA PARA W E ASSIM SALVAR NAS VARIÁVEIS AUXIALE
+                            RS.
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-19-2018  15:58:40         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0066   00A5           00261         MOVWF   TEMP
+Message[305]: Using default destination of 1 (file).
+0067   03A8           00262         DECF    CRTL_LIM_READ    ;DIMINUI NO CONTROLE DE ELEMENTOS
+0068   1903           00263         BTFSC   STATUS,Z         ;SE A OPERAÇÃO ACIMA FOR ZERO, ENTÃO ACABARAM OS ELEMENTOS E É O FIM DA
+                             ORDENAÇÃO.
+0069   286D           00264         GOTO    PSEUDO_FIM
+006A   0828           00265         MOVFW   CRTL_LIM_READ    ;CASO NÃO SEJA O FIM, ATUALIZA O CONTADOR DE ELEMENTOS E VOLTA PRA ORDE
+                            NAR O RESTANTE DOS VALORES.
+006B   00A3           00266         MOVWF   LIM_READ
+006C   2849           00267         GOTO    ORDENAR
+                      00268         
+006D                  00269 PSEUDO_FIM
+006D   1285           00270         BCF     GPIO,GP5
+                      00271         
+                      00272         ; *** ESCREVENDO NA EEPROM ***
+006E   3028           00273         MOVLW   D'40'   ;REDEFINE O LIMITE DE LEITURA, QUE TAMBÉM PODE SER ENTENDIDO COMO ESCRITA
+006F   00A3           00274         MOVWF   LIM_READ
+0070   3030           00275         MOVLW   0x30    ;CONFIGURA O ENDREÇO DE ONDE DEVE COMEÇAR A LER NA MEMÓRIA RAM
+0071   0084           00276         MOVWF   FSR     ;SETA O FSR PARA O ENDEREÇO EM QUESTÃO
+0072   0800           00277         MOVFW   INDF    ;JÁ PUXA O DADO DO PRIMEIRO ENDEREÇO PARA A VARIÁVEL DADO
+0073   00A2           00278         MOVWF   DADO
+0074   3000           00279         MOVLW   0x00    ;AJUSTA O ENDERAÇO ONDE SERA ESCREITO NA EEPROM E O DEIXA EM W PARA A FUNÇÃO DE 
+                            ESCRITA LER DAQUI.
+0075   00A5           00280         MOVWF   TEMP
+                      00281 
+0076                  00282 GRAVANDO_EEPROM
+0076   2013           00283         CALL    GRAVA_EEPROM    ;CHAMA A FUNÇÃO DE ESCRITA PARA ESCREVER O PRIMEIRO DADO
+Message[305]: Using default destination of 1 (file).
+0077   0A84           00284         INCF    FSR             ;ATUALIZA O FSR PARA O PRÓXIMO ENDREÇO
+0078   0800           00285         MOVFW   INDF            ;PUXA NOVAMENTE O PRÓXIMO DADO PARA SALVAR NA VARIÁEL DADO.
+0079   01A2           00286         CLRF    DADO
+007A   00A2           00287         MOVWF   DADO
+Message[305]: Using default destination of 1 (file).
+007B   0AA5           00288         INCF    TEMP            ;ATUALIZA O TEMP PARA O NOVO ENDEREÇO ONDE DEVERÁ SER SALVO NA PRÓXIMA C
+                            HAMADA DO GRAVA_EEPROM
+007C   0825           00289         MOVFW   TEMP            ;MOVE-O PARA W, PARA ENTÃO A FUNÇÃO FUNCIONAR CORRETAMENTE
+007D   0BA3           00290         DECFSZ  LIM_READ,F      ;TESTE SE JÁ FORAM LIDOS TODOS.
+007E   2876           00291         GOTO    GRAVANDO_EEPROM
+                      00292         
+                      00293         
+                      00294         
+                      00295 
+                      00296         
+007F                  00297 FIM
+007F   287F           00298         GOTO    FIM
+                      00299 
+                      00300 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00301 ;*                       FIM DO PROGRAMA                           *
+                      00302 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00303 
+                      00304         END
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-19-2018  15:58:40         PAGE  8
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ACHOU_MENOR                       00000051
+ADCON0                            0000001F
+ADCS0                             00000004
+ADCS1                             00000005
+ADCS2                             00000006
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+AGUARDA                           0000001F
+ANS0                              00000000
+ANS1                              00000001
+ANS2                              00000002
+ANS3                              00000003
+ANSEL                             0000009F
+BANK0                             BCF STATUS,RP0
+BANK1                             BSF STATUS,RP0
+C                                 00000000
+CAL0                              00000002
+CAL1                              00000003
+CAL2                              00000004
+CAL3                              00000005
+CAL4                              00000006
+CAL5                              00000007
+CHS0                              00000002
+CHS1                              00000003
+CINV                              00000004
+CIS                               00000003
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             00000019
+CMIE                              00000003
+CMIF                              00000003
+COUT                              00000006
+CRTL_LIM_READ                     00000028
+DADO                              00000022
+DC                                00000001
+EEADR                             0000009B
+EECON1                            0000009C
+EECON2                            0000009D
+EEDAT                             0000009A
+EEDATA                            0000009A
+EEIE                              00000007
+EEIF                              00000007
+F                                 00000001
+FIM                               0000007F
+FSR                               00000004
+GIE                               00000007
+GO                                00000001
+GO_DONE                           00000001
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-19-2018  15:58:40         PAGE  9
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+GO_NOT_DONE                       00000001
+GP0                               00000000
+GP1                               00000001
+GP2                               00000002
+GP3                               00000003
+GP4                               00000004
+GP5                               00000005
+GPIE                              00000003
+GPIF                              00000000
+GPIO                              00000005
+GPIO0                             00000000
+GPIO1                             00000001
+GPIO2                             00000002
+GPIO3                             00000003
+GPIO4                             00000004
+GPIO5                             00000005
+GRAVANDO_EEPROM                   00000076
+GRAVA_EEPROM                      00000013
+INDF                              00000000
+INICIO                            00000025
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IOC                               00000096
+IOC0                              00000000
+IOC1                              00000001
+IOC2                              00000002
+IOC3                              00000003
+IOC4                              00000004
+IOC5                              00000005
+IOCB                              00000096
+IOCB0                             00000000
+IOCB1                             00000001
+IOCB2                             00000002
+IOCB3                             00000003
+IOCB4                             00000004
+IOCB5                             00000005
+IRP                               00000007
+LE_EEPROM                         0000000C
+LIM_READ                          00000023
+MAIN                              00000034
+NEXT                              00000038
+NOT_BOD                           00000000
+NOT_BOR                           00000000
+NOT_DONE                          00000001
+NOT_GPPU                          00000007
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+OPTION_REG                        00000081
+ORDENAR                           00000049
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-19-2018  15:58:40         PAGE 10
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ORD_ADDR                          00000027
+OSCCAL                            00000090
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+PSEUDO_FIM                        0000006D
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+SAI_INT                           00000007
+STATUS                            00000003
+STATUS_TEMP                       00000021
+SUBROTINA1                        00000024
+SWAP_ORD                          00000024
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1IE                              00000000
+T1IF                              00000000
+T1OSCEN                           00000003
+TEMP                              00000025
+TEMP_ADDR                         00000026
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+TMR1GE                            00000006
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TRISIO                            00000085
+TRISIO0                           00000000
+TRISIO1                           00000001
+TRISIO2                           00000002
+TRISIO3                           00000003
+TRISIO4                           00000004
+TRISIO5                           00000005
+TROCAR                            00000057
+VCFG                              00000006
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-19-2018  15:58:40         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+VR0                               00000000
+VR1                               00000001
+VR2                               00000002
+VR3                               00000003
+VRCON                             00000099
+VREN                              00000007
+VRR                               00000005
+W                                 00000000
+WPU                               00000095
+WPU0                              00000000
+WPU1                              00000001
+WPU2                              00000002
+WPU4                              00000004
+WPU5                              00000005
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+W_TEMP                            00000020
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_OFF                           00003FFF
+_CP_ON                            00003F7F
+_DEVID1                           00002006
+_EC_OSC                           00003FFB
+_EXTRC_OSC_CLKOUT                 00003FFF
+_EXTRC_OSC_NOCLKOUT               00003FFE
+_FOSC_EC                          00003FFB
+_FOSC_EXTRCCLK                    00003FFF
+_FOSC_EXTRCIO                     00003FFE
+_FOSC_HS                          00003FFA
+_FOSC_INTRCCLK                    00003FFD
+_FOSC_INTRCIO                     00003FFC
+_FOSC_LP                          00003FF8
+_FOSC_XT                          00003FF9
+_HS_OSC                           00003FFA
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_INTRC_OSC_CLKOUT                 00003FFD
+_INTRC_OSC_NOCLKOUT               00003FFC
+_LP_OSC                           00003FF8
+_MCLRE_OFF                        00003FDF
+_MCLRE_ON                         00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FEF
+_WDTE_OFF                         00003FF7
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-19-2018  15:58:40         PAGE 12
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FF7
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FF9
+__12F675                          00000001
+__DEBUG                           
+__MPLAB_DEBUGGER_SIMULATOR        1
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X---XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+2000 : -------X-------- ---------------- ---------------- ----------------
+2100 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXX-------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   125
+Program Memory Words Free:   899
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :    20 reported,     0 suppressed
+
+

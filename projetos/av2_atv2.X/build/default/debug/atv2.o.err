@@ -1,0 +1,15 @@
+Message[302] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM 134 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM 136 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Message[302] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM 138 : Register in operand not in bank 0.  Ensure that bank bits are correct.
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM 244 : Found label after column 1. (NEG1)
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM 260 : Found label after column 1. (NEG2)
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM 275 : Found label after column 1. (NEG3)
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM 290 : Found label after column 1. (NEG4)
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM 305 : Found label after column 1. (NEG5)
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM 320 : Found label after column 1. (NEG6)
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM 335 : Found label after column 1. (NEG7)
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM 350 : Found label after column 1. (NEG8)
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM 365 : Found label after column 1. (NEG9)
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM 380 : Found label after column 1. (NEG10)
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM 395 : Found label after column 1. (NEG11)
+Warning[207] /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM 410 : Found label after column 1. (NEG12)

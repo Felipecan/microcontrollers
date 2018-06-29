@@ -1,0 +1,851 @@
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-25-2018  10:12:53         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00002 ;*              MODIFICAÇÕES PARA USO COM 12F675                   *
+                      00003 ;*                FEITAS PELO PROF. MARDSON                        *
+                      00004 ;*                    FEVEREIRO DE 2016                            *
+                      00005 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00006 
+                      00007 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00008 ;*                       NOME DO PROJETO                           *
+                      00009 ;*                           CLIENTE                               *
+                      00010 ;*         DESENVOLVIDO PELA MOSAICO ENGENHARIA E CONSULTORIA      *
+                      00011 ;*   VERSÃO: 1.0                           DATA: 17/06/03          *
+                      00012 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00013 ;*                     DESCRIÇÃO DO ARQUIVO                        *
+                      00014 ;*-----------------------------------------------------------------*
+                      00015 ;*   MODELO PARA O PIC 12F675                                      *
+                      00016 ;*                                                                 *
+                      00017 ;*                                                                 *
+                      00018 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00019 
+                      00020 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00021 ;*                     ARQUIVOS DE DEFINIÇÕES                      *
+                      00022 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00023 #INCLUDE <p12f675.inc>  ;ARQUIVO PADRÃO MICROCHIP PARA 12F675
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ; Build date : Nov 22 2017
+                      00005 ;  MPASM PIC12F675 processor include
+                      00006 ; 
+                      00007 ;  (c) Copyright 1999-2017 Microchip Technology, All rights reserved
+                      00008 ;==========================================================================
+                      00009 
+                      00367         LIST
+                      00024 
+2007   3F84           00025         __CONFIG _BODEN_OFF & _CP_OFF & _PWRTE_ON & _WDT_OFF & _MCLRE_OFF & _INTRC_OSC_NOCLKOUT
+                      00026 
+                      00027 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00028 ;*                    PAGINAÇÃO DE MEMÓRIA                         *
+                      00029 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00030 ;DEFINIÇÃO DE COMANDOS DE USUÁRIO PARA ALTERAÇÃO DA PÁGINA DE MEMÓRIA
+                      00031 #DEFINE BANK0   BCF STATUS,RP0  ;SETA BANK 0 DE MEMÓRIA
+                      00032 #DEFINE BANK1   BSF STATUS,RP0  ;SETA BANK 1 DE MAMÓRIA
+                      00033 
+                      00034 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00035 ;*                         VARIÁVEIS                               *
+                      00036 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00037 ; DEFINIÇÃO DOS NOMES E ENDEREÇOS DE TODAS AS VARIÁVEIS UTILIZADAS 
+                      00038 ; PELO SISTEMA
+                      00039 
+                      00040         CBLOCK  0x20    ;ENDEREÇO INICIAL DA MEMÓRIA DE
+                      00041                                         ;USUÁRIO
+  00000020            00042                 W_TEMP          ;REGISTRADORES TEMPORÁRIOS PARA USO
+  00000021            00043                 STATUS_TEMP     ;JUNTO ÀS INTERRUPÇÕES
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-25-2018  10:12:53         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00044 
+                      00045                 ;NOVAS VARIÁVEIS
+  00000022            00046                 MSD     ;DIGITO MAIS SIGNIFICATIVO
+  00000023            00047                 LSD     ;DIGITO MENOS SIGNIFICATIVO
+  00000024            00048                 TEMP    ;AUX REGISTRADOR
+                      00049 
+                      00050         ENDC                    ;FIM DO BLOCO DE MEMÓRIA
+                      00051 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00052 ;*                        FLAGS INTERNOS                           *
+                      00053 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00054 ; DEFINIÇÃO DE TODOS OS FLAGS UTILIZADOS PELO SISTEMA
+                      00055 
+                      00056 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00057 ;*                         CONSTANTES                              *
+                      00058 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00059 ; DEFINIÇÃO DE TODAS AS CONSTANTES UTILIZADAS PELO SISTEMA
+                      00060 
+                      00061 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00062 ;*                           ENTRADAS                              *
+                      00063 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00064 ; DEFINIÇÃO DE TODOS OS PINOS QUE SERÃO UTILIZADOS COMO ENTRADA
+                      00065 ; RECOMENDAMOS TAMBÉM COMENTAR O SIGNIFICADO DE SEUS ESTADOS (0 E 1)
+                      00066 
+                      00067 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00068 ;*                           SAÍDAS                                *
+                      00069 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00070 ; DEFINIÇÃO DE TODOS OS PINOS QUE SERÃO UTILIZADOS COMO SAÍDA
+                      00071 ; RECOMENDAMOS TAMBÉM COMENTAR O SIGNIFICADO DE SEUS ESTADOS (0 E 1)
+                      00072 
+                      00073 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00074 ;*                       VETOR DE RESET                            *
+                      00075 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00076 
+0000                  00077         ORG     0x00                    ;ENDEREÇO INICIAL DE PROCESSAMENTO
+0000   2813           00078         GOTO    INICIO
+                      00079         
+                      00080 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00081 ;*                    INÍCIO DA INTERRUPÇÃO                        *
+                      00082 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00083 ; ENDEREÇO DE DESVIO DAS INTERRUPÇÕES. A PRIMEIRA TAREFA É SALVAR OS
+                      00084 ; VALORES DE "W" E "STATUS" PARA RECUPERAÇÃO FUTURA
+                      00085 
+0004                  00086         ORG     0x04                    ;ENDEREÇO INICIAL DA INTERRUPÇÃO
+0004   00A0           00087         MOVWF   W_TEMP          ;COPIA W PARA W_TEMP
+0005   0E03           00088         SWAPF   STATUS,W
+0006   00A1           00089         MOVWF   STATUS_TEMP     ;COPIA STATUS PARA STATUS_TEMP
+                      00090 
+                      00091 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00092 ;*                    ROTINA DE INTERRUPÇÃO                        *
+                      00093 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00094 ; AQUI SERÁ ESCRITA AS ROTINAS DE RECONHECIMENTO E TRATAMENTO DAS
+                      00095 ; INTERRUPÇÕES
+                      00096 
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-25-2018  10:12:53         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00097 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00098 ;*                 ROTINA DE SAÍDA DA INTERRUPÇÃO                  *
+                      00099 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00100 ; OS VALORES DE "W" E "STATUS" DEVEM SER RECUPERADOS ANTES DE 
+                      00101 ; RETORNAR DA INTERRUPÇÃO
+                      00102 
+0007                  00103 SAI_INT
+0007   0E21           00104         SWAPF   STATUS_TEMP,W
+0008   0083           00105         MOVWF   STATUS          ;MOVE STATUS_TEMP PARA STATUS
+0009   0EA0           00106         SWAPF   W_TEMP,F
+000A   0E20           00107         SWAPF   W_TEMP,W        ;MOVE W_TEMP PARA W
+000B   0009           00108         RETFIE
+                      00109 
+                      00110 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00111 ;*                       ROTINAS E SUBROTINAS                      *
+                      00112 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00113 ; CADA ROTINA OU SUBROTINA DEVE POSSUIR A DESCRIÇÃO DE FUNCIONAMENTO
+                      00114 ; E UM NOME COERENTE ÀS SUAS FUNÇÕES.
+                      00115 
+                      00116 ;SIMPLES ROTINA PARA MOSTRAR NO GPIO O VALOR DO DIGITO MAIS SIGNIFICATIVO. OBS: GP5,GP4,GP1,GP0 É A SEQU
+                            ENCIA DO MAIS PRA O MENOS SIGNIFICATIVO
+000C                  00117 HIGH_DIG
+000C   0805           00118         MOVFW   GPIO            ;SALVA O ESTADO DO GPIO EM W
+000D   00A4           00119         MOVWF   TEMP            ;E ARMAZENA-O EM TEMP, ASSIM NÃO IRA SOFRER NENHUM ALTERAÇÃO ATÉ O FINAL
+000E   300C           00120         MOVLW   B'00001100'     ;MOVE O SEGUINTE VALOR PARA O W, E ASSIM
+000F   0524           00121         ANDWF   TEMP,W          ;FAZER O AND COM O TEMP(GPIO) PARA LIMPAR OS VALORES DE GP0,1,4,5 QUE CO
+                            RRESPONDE NA VARIÁVEL E SALVA O VALOR FINAL EM W        
+0010   0422           00122         IORWF   MSD,W           ;APLICANDO UM OU ENTRE O ESTADO DO GPIO E LSD PARA NÃO ALTERAR OS VALORE
+                            S DO GP2,3 E ATRIBUIR O VALOR DA TENSÃO NOS PINOS CERTOS
+0011   0085           00123         MOVWF   GPIO            ;O VALOR DO OR É SALVO EM W E EM SEGUIDA TRANSFERIDO PARA O GPIO
+0012   0008           00124         RETURN
+                      00125 
+                      00126 
+                      00127 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00128 ;*                     INICIO DO PROGRAMA                          *
+                      00129 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00130         
+0013                  00131 INICIO
+0013   1683           00132         BANK1                           ;ALTERA PARA O BANCO 1
+0014   300C           00133         MOVLW   B'00001100' ;CONFIGURA TODAS AS PORTAS DO GPIO (PINOS)
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0015   0085           00134         MOVWF   TRISIO          ;COMO SAÍDAS, TIRANDO O GP2 E GP3
+0016   3004           00135         MOVLW   B'00000100'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0017   009F           00136         MOVWF   ANSEL           ;DEFINE PORTAS COMO Digital I/O, TIRANDO O GP2; USANDO O FOSC/2 - 1.6*10
+                            ^-6
+0018   3000           00137         MOVLW   B'00000000'
+Message[302]: Register in operand not in bank 0.  Ensure that bank bits are correct.
+0019   0081           00138         MOVWF   OPTION_REG      ;DEFINE OPÇÕES DE OPERAÇÃO
+001A   3000           00139         MOVLW   B'00000000'
+001B   008B           00140         MOVWF   INTCON          ;DEFINE OPÇÕES DE INTERRUPÇÕES
+001C   1283           00141         BANK0                           ;RETORNA PARA O BANCO
+001D   3007           00142         MOVLW   B'00000111'
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-25-2018  10:12:53         PAGE  4
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+001E   0099           00143         MOVWF   CMCON           ;DEFINE O MODO DE OPERAÇÃO DO COMPARADOR ANALÓGICO
+001F   3009           00144         MOVLW   B'00001001'
+0020   009F           00145         MOVWF   ADCON0          ;DEFINE FORMATADO A ESQUERDA; VDD-REF ON; CHANNEL AN2; ADON
+                      00146 
+                      00147 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00148 ;*                     INICIALIZAÇÃO DAS VARIÁVEIS                 *
+                      00149 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00150         
+0021   01A4           00151         CLRF    TEMP
+                      00152         ;LIMPA AMBOS REGISTRADOS QUE IRÃO CONTER O VALOR FINAL
+0022   01A2           00153         CLRF    MSD
+0023   01A3           00154         CLRF    LSD
+                      00155 
+                      00156 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00157 ;*                     ROTINA PRINCIPAL                            *
+                      00158 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+0024                  00159 MAIN
+0024   1D85           00160         BTFSS   GPIO,GP3        ;TESTE O GP3 PARA VER SE TÁ LOW OU HIGH
+0025   282C           00161         GOTO    LOW_DIG         ;CHAMA A ROTINA QUE COLOCA O DIGITO MENOS SIGNIFICATIVO
+0026   200C           00162         CALL    HIGH_DIG        ;CHAMA A ROTINA QUE COLOCA O DIGITO MAIS SIGNIFICATIVO
+                      00163         
+0027                  00164 BEGCONV 
+0027   149F           00165         BSF     ADCON0,1        ;INCIO DA CONVERSÃO A/D
+                      00166         
+0028                  00167 AD_CONV 
+0028   189F           00168         BTFSC   ADCON0,1        ;ESPEAR ENQUANTO A CONVERSÃO NÃO ACABA
+0029   2828           00169         GOTO    AD_CONV     
+002A   2833           00170         GOTO    PROC_AD         ;QUANDO A CONVERSÃO ACABAR, CHAMA A ROTINA QUE IRA PROCESSAR PARA O VALO
+                            R CORRETO
+                      00171         
+002B   2824           00172         GOTO    MAIN
+                      00173 
+                      00174 ;ROTINA PARA COLOCAR O DIGITO MENOS SIGNIFICATIVO NO GPIO. OBS: GP5,GP4,GP1,GP0 É A SEQUENCIA DO MAIS PR
+                            A O MENOS SIGNIFICATIVO
+002C                  00175 LOW_DIG 
+002C   0805           00176         MOVFW   GPIO            ;SALVA O ESTADO DO GPIO EM W
+002D   00A4           00177         MOVWF   TEMP            ;E ARMAZENA-O EM TEMP, ASSIM NÃO IRA SOFRER NENHUM ALTERAÇÃO ATÉ O FINAL
+002E   300C           00178         MOVLW   B'00001100'     ;MOVE O SEGUINTE VALOR PARA O W, E ASSIM 
+002F   0524           00179         ANDWF   TEMP,W          ;FAZER O AND COM O TEMP(GPIO) PARA LIMPAR OS VALORES DE GP0,1,4,5 QUE CO
+                            RRESPONDE NA VARIÁVEL E SALVA O VALOR FINAL EM W        
+0030   0423           00180         IORWF   LSD,W           ;APLICANDO UM OU ENTRE O ESTADO DO GPIO E LSD PARA NÃO ALTERAR OS VALORE
+                            S DO GP2,3 E ATRIBUIR O VALOR DA TENSÃO NOS PINOS CERTOS
+0031   0085           00181         MOVWF   GPIO            ;O VALOR DO OR É SALVO EM W E EM SEGUIDA TRANSFERIDO PARA O GPIO
+0032   2827           00182         GOTO    BEGCONV         ;VOLTA PARA MAIN PULANDO A INSTRUÇÃO DO HG
+                      00183         
+0033                  00184 PROC_AD
+0033   3015           00185         MOVLW   .21             ;O VALOR DE 1V CORRESPONDE A .21 NO REGISTRADOR
+0034   021E           00186         SUBWF   ADRESH,W        ;SUBTRAINDO-O(L) DO ADRESH PARA SABER SE A TENSÃO LIDA TÁ ENTRE 0 E 1
+0035   1C03           00187         BTFSS   STATUS,C        ;CASO O BIT DE CARRY SEJA 0, ENTÃO O VALOR TÁ NO INTERVALO E 
+0036   2864           00188         GOTO    RANGE_0_TO_1    ;É CHAMADA A ROTINA PARA ARREDONDAR E COLOCAR O VALOR NO DIGITO 
+0037   302A           00189         MOVLW   .42         ;2  CASO O VALOR ANTERIOR NÃO ESTEJA ENTRE 0 E 1, O .42 É O VALOR PARA O 2V
+0038   021E           00190         SUBWF   ADRESH,W        ;SUBTRAINDO-O(L) DO ADRESH PARA SABER SE A TENSÃO LIDA TÁ ENTRE 1 E 2
+0039   1C03           00191         BTFSS   STATUS,C        ;CASO O BIT DE CARRY SEJA 0, ENTÃO O VALOR TÁ NO INTERVALO E
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-25-2018  10:12:53         PAGE  5
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+003A   2870           00192         GOTO    RANGE_1_TO_2    ;É CHAMADA A ROTINA PARA ARREDONDAR E COLOCAR O VALOR NO DIGITO 
+003B   3040           00193         MOVLW   .64         ;3  CASO O VALOR ANTERIOR NÃO ESTEJA ENTRE 1 E 2, O .64 É O VALOR PARA O 3V
+003C   021E           00194         SUBWF   ADRESH,W        ;SUBTRAINDO-O(L) DO ADRESH PARA SABER SE A TENSÃO LIDA TÁ ENTRE 2 E 3
+003D   1C03           00195         BTFSS   STATUS,C        ;CASO O BIT DE CARRY SEJA 0, ENTÃO O VALOR TÁ NO INTERVALO E 
+003E   287C           00196         GOTO    RANGE_2_TO_3    ;É CHAMADA A ROTINA PARA ARREDONDAR E COLOCAR O VALOR NO DIGITO 
+003F   3055           00197         MOVLW   .85         ;4  CASO O VALOR ANTERIOR NÃO ESTEJA ENTRE 0 E 1, O .42 É O VALOR PARA O 2V
+0040   021E           00198         SUBWF   ADRESH,W
+0041   1C03           00199         BTFSS   STATUS,C
+0042   2888           00200         GOTO    RANGE_3_TO_4
+0043   306A           00201         MOVLW   .106        ;5                  A MESMO PROCEDIMENTO FEITO PARA O VALORES ANTERIORES SÃO
+                             FEITOS PARA O RESTANTE ATÉ 12 V
+0044   021E           00202         SUBWF   ADRESH,W
+0045   1C03           00203         BTFSS   STATUS,C
+0046   2894           00204         GOTO    RANGE_4_TO_5
+0047   3080           00205         MOVLW   .128        ;6
+0048   021E           00206         SUBWF   ADRESH,W
+0049   1C03           00207         BTFSS   STATUS,C
+004A   28A0           00208         GOTO    RANGE_5_TO_6
+004B   3095           00209         MOVLW   .149        ;7
+004C   021E           00210         SUBWF   ADRESH,W
+004D   1C03           00211         BTFSS   STATUS,C
+004E   28AC           00212         GOTO    RANGE_6_TO_7
+004F   30AA           00213         MOVLW   .170        ;8
+0050   021E           00214         SUBWF   ADRESH,W
+0051   1C03           00215         BTFSS   STATUS,C
+0052   28B8           00216         GOTO    RANGE_7_TO_8
+0053   30C0           00217         MOVLW   .192        ;9
+0054   021E           00218         SUBWF   ADRESH,W
+0055   1C03           00219         BTFSS   STATUS,C
+0056   28C4           00220         GOTO    RANGE_8_TO_9
+0057   30D5           00221         MOVLW   .213        ;10
+0058   021E           00222         SUBWF   ADRESH,W
+0059   1C03           00223         BTFSS   STATUS,C
+005A   28D0           00224         GOTO    RANGE_9_TO_10
+005B   30EA           00225         MOVLW   .234        ;11
+005C   021E           00226         SUBWF   ADRESH,W
+005D   1C03           00227         BTFSS   STATUS,C
+005E   28DC           00228         GOTO    RANGE_10_TO_11
+005F   30FF           00229         MOVLW   .255        ;12
+0060   021E           00230         SUBWF   ADRESH,W
+0061   1C03           00231         BTFSS   STATUS,C
+0062   28E8           00232         GOTO    RANGE_11_TO_12
+0063   2824           00233         GOTO    MAIN
+                      00234         
+0064                  00235 RANGE_0_TO_1
+0064   300A           00236         MOVLW   .10;0.5             O VALOR .10 EQUIVALE A 0.5V, ELE VAI SERVIR DE REFERENCIA PARA O ARR
+                            EDONDAMENTO
+0065   021E           00237         SUBWF   ADRESH,W           ;SUBTRAI A REFERENCIA DO ADRESH, ASSIM SABEREMOS SE O VALOR TA MAIS P
+                            RA 0 OU PRA 1
+0066   1803           00238         BTFSC   STATUS,C           ;SE O BIT DE CARRY FOR 1, ENTÃO O VALOR DE ENTRADA TA MAIS PARA 1V
+0067   286C           00239         GOTO    NEG1               ;CHAMA A PARTE DE ARREDONDAMENTO PRA CIMA, SE NÃO, ELE IRA ARREDONDAR
+                             PARA BAIXO
+0068   01A2           00240         CLRF    MSD                ;LIMPA O DIGITO MAIS SIGNIFICATIVO, POIS ESTAMOS ENTRE 0 E 1 VOLT
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-25-2018  10:12:53         PAGE  6
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0069   3000           00241         MOVLW   .0                 ;SE TRATANDO DE ARREDONDAMENTO PRA BAIXO ENTRE 0 E 1, JOGA O 0 PARA O
+                             W
+006A   00A3           00242         MOVWF   LSD                ;SALVA NA VARIÁVEL DO BIT MENOS SIGNIFICATIVO
+006B   2824           00243         GOTO    MAIN               ;RETORNA PARA MAIN
+Warning[207]: Found label after column 1. (NEG1)
+006C                  00244         NEG1    
+006C   3001           00245                 MOVLW   .1         ;ROTINA DE ARREDONDAMENTO PARA CIMA
+006D   00A3           00246                 MOVWF   LSD        ;COLOCA 1 NO DIGITO MENOS SIGNIFICATIVO
+006E   01A2           00247                 CLRF    MSD        ;LIMPA O MAIS SIGNIFICATIVO
+006F   2824           00248                 GOTO    MAIN       ;VOLTA PARA MAIN
+                      00249         
+                      00250         
+0070                  00251 RANGE_1_TO_2
+0070   3020           00252         MOVLW   .32;1.5            O VALOR .32 EQUIVALE A 1.5V, ELE VAI SERVIR DE REFERENCIA PARA O ARRE
+                            DONDAMENTO
+0071   021E           00253         SUBWF   ADRESH,W          ;SUBTRAI A REFERENCIA DO ADRESH, ASSIM SABEREMOS SE O VALOR TA MAIS PR
+                            A 1 OU PRA 2
+0072   1803           00254         BTFSC   STATUS,C          ;SE O BIT DE CARRY FOR 1, ENTÃO O VALOR DE ENTRADA TA MAIS PARA 2V
+0073   2878           00255         GOTO    NEG2              ;CHAMA A PARTE DE ARREDONDAMENTO PRA CIMA, SE NÃO, ELE IRA ARREDONDAR 
+                            PARA BAIXO
+0074   01A2           00256         CLRF    MSD               ;LIMPA O DIGITO MAIS SIGNIFICATIVO, POIS ESTAMOS ENTRE 1 E 2 VOLT
+0075   3001           00257         MOVLW   .1                ;SE TRATANDO DE ARREDONDAMENTO PRA BAIXO ENTRE 0 E 1, JOGA O 1 PARA O 
+                            W
+0076   00A3           00258         MOVWF   LSD               ;SALVA NA VARIÁVEL DO BIT MENOS SIGNIFICATIVO
+0077   2824           00259         GOTO    MAIN              ;RETORNA PARA MAIN
+Warning[207]: Found label after column 1. (NEG2)
+0078                  00260         NEG2    
+0078   3002           00261                 MOVLW   .2        ;ROTINA DE ARREDONDAMENTO PARA CIMA
+0079   00A3           00262                 MOVWF   LSD       ;COLOCA 2 NO DIGITO MENOS SIGNIFICATIVO
+007A   01A2           00263                 CLRF    MSD       ;LIMPA O MAIS SIGNIFICATIVO
+007B   2824           00264                 GOTO    MAIN      ;VOLTA PARA MAIN
+                      00265                 
+007C                  00266 RANGE_2_TO_3
+007C   3035           00267         MOVLW   .53;2.5           NESTA ROTINA OS MESMO PASSOS SEGUIDOS ANTERIORMENTE SÃO EXECUTADOS PAR
+                            A O RAIO EM QUESTÃO
+007D   021E           00268         SUBWF   ADRESH,W                                ;ATÉ O VALOR 4
+007E   1803           00269         BTFSC   STATUS,C
+007F   2884           00270         GOTO    NEG3
+0080   01A2           00271         CLRF    MSD
+0081   3002           00272         MOVLW   .2
+0082   00A3           00273         MOVWF   LSD
+0083   2824           00274         GOTO    MAIN
+Warning[207]: Found label after column 1. (NEG3)
+0084                  00275         NEG3    
+0084   3003           00276                 MOVLW   .3
+0085   00A3           00277                 MOVWF   LSD
+0086   01A2           00278                 CLRF    MSD
+0087   2824           00279                 GOTO    MAIN
+                      00280                 
+0088                  00281 RANGE_3_TO_4
+0088   304A           00282         MOVLW   .74;3.5           NESTA ROTINA OS MESMO PASSOS SEGUIDOS ANTERIORMENTE SÃO EXECUTADOS PAR
+                            A O RAIO EM QUESTÃO
+0089   021E           00283         SUBWF   ADRESH,W                                ;ATÉ O VALOR 4
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-25-2018  10:12:53         PAGE  7
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+008A   1803           00284         BTFSC   STATUS,C
+008B   2890           00285         GOTO    NEG4
+008C   01A2           00286         CLRF    MSD
+008D   3003           00287         MOVLW   .3
+008E   00A3           00288         MOVWF   LSD
+008F   2824           00289         GOTO    MAIN
+Warning[207]: Found label after column 1. (NEG4)
+0090                  00290         NEG4    
+0090   3010           00291                 MOVLW   B'00010000'
+0091   00A3           00292                 MOVWF   LSD
+0092   01A2           00293                 CLRF    MSD
+0093   2824           00294                 GOTO    MAIN
+                      00295                 
+0094                  00296 RANGE_4_TO_5
+0094   3060           00297         MOVLW   .96;4.5                 O VALOR .96 EQUIVALE A 4.5V, ENTÃO ESSA SERÁ A REFERENCIA PARA O
+                             ARREDONDAMENTO
+0095   021E           00298         SUBWF   ADRESH,W                ;SUBTRAI A REFERENCIA DO ADRESH, ASSIM SABEREMOS SE O VALOR TA M
+                            AIS PRA 4 OU PRA 5
+0096   1803           00299         BTFSC   STATUS,C                ;SE O BIT DE CARRY FOR 1, ENTÃO O VALOR DE ENTRADA TA MAIS PARA 
+                            5V
+0097   289C           00300         GOTO    NEG5                    ;CHAMA A PARTE DE ARREDONDAMENTO PRA CIMA, SE NÃO, ELE IRA ARRED
+                            ONDAR PARA BAIXO
+0098   01A2           00301         CLRF    MSD                     ;LIMPA O DIGITO MAIS SIGNIFICATIVO, POIS ESTAMOS ENTRE 4 E 5 VOL
+                            T
+0099   3010           00302         MOVLW   B'00010000'             ;MOVE O SEGUINTE VALOR PARA O W, ESSE VALOR IRA CORREONDER A 4, 
+                            POIS O GPIO IRA TRABALHAR COM GP5,4,2,1, ENTÃO USAREMOS OS MESMO BITS PARA RESPRESNTAR O VALOR
+009A   00A3           00303         MOVWF   LSD                     ;MOVE O VALOR PARA O DIGITO MENOS SIGNIFICATIVO, ELE IRA JOGAR 0
+                            100 NO GPIO [GP5,4,1,0]=[0100]
+009B   2824           00304         GOTO    MAIN                    ;VOLTA PARA A MAIN
+Warning[207]: Found label after column 1. (NEG5)
+009C                  00305         NEG5    
+009C   3011           00306                 MOVLW   B'00010001'     ;NA ROTINA DE ARREDONDAMENTO PARA CIMA, O VALOR DO W IRA CORRESP
+                            ONDER EM 5 NO GPIO
+009D   00A3           00307                 MOVWF   LSD             ;MOVE O VALOR PARA O DIGITO MENOS SIGNIFICATIVO, QUE ASSIM COMO 
+                            O 4 SERA O 5 SERA REPRESENTADO USANDO A MESMA POSIÇÃO DE BITS    
+009E   01A2           00308                 CLRF    MSD             ;LIMPA O DIGITO MAIS SIGNIFICATIVO
+009F   2824           00309                 GOTO    MAIN            ;RETORNA PARA MAIN
+                      00310                 
+00A0                  00311 RANGE_5_TO_6
+00A0   3075           00312         MOVLW   .117;5.5                O VALOR .117 EQUIVALE A 5.5V, ENTÃO ESSA SERÁ A REFERENCIA PARA 
+                            O ARREDONDAMENTO
+00A1   021E           00313         SUBWF   ADRESH,W                ;SUBTRAI A REFERENCIA DO ADRESH, ASSIM SABEREMOS SE O VALOR TA M
+                            AIS PRA 5 OU PRA 6
+00A2   1803           00314         BTFSC   STATUS,C                ;SE O BIT DE CARRY FOR 1, ENTÃO O VALOR DE ENTRADA TA MAIS PARA 
+                            6V
+00A3   28A8           00315         GOTO    NEG6                    ;CHAMA A PARTE DE ARREDONDAMENTO PRA CIMA, SE NÃO, ELE IRA ARRED
+                            ONDAR PARA BAIXO
+00A4   01A2           00316         CLRF    MSD                     ;LIMPA O DIGITO MAIS SIGNIFICATIVO, POIS ESTAMOS ENTRE 5 E 6 VOL
+                            T
+00A5   3011           00317         MOVLW   B'00010001'             ;MOVE O SEGUINTE VALOR PARA O W, ESSE VALOR IRA CORREPONDER A 5,
+                             POIS O GPIO IRA TRABALHAR COM GP5,4,2,1, ENTÃO USAREMOS OS MESMO BITS PARA RESPRESNTAR O VALOR
+00A6   00A3           00318         MOVWF   LSD                     ;MOVE O VALOR PARA O DIGITO MENOS SIGNIFICATIVO, ELE IRA JOGAR 0
+                            101 NO GPIO [GP5,4,1,0]=[0101]
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-25-2018  10:12:53         PAGE  8
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00A7   2824           00319         GOTO    MAIN                    ;VOLTA PARA A MAIN
+Warning[207]: Found label after column 1. (NEG6)
+00A8                  00320         NEG6    
+00A8   3012           00321                 MOVLW   B'00010010'     ;NA ROTINA DE ARREDONDAMENTO PARA CIMA, O VALOR DO W IRA CORRESP
+                            ONDER EM 6 NO GPIO
+00A9   00A3           00322                 MOVWF   LSD             ;MOVE O VALOR PARA O DIGITO MENOS SIGNIFICATIVO, QUE ASSIM COMO 
+                            O 5 SERA O 6 TAMBÉM SERA REPRESENTADO USANDO A MESMA POSIÇÃO DE BITS
+00AA   01A2           00323                 CLRF    MSD             ;LIMPA O DIGITO MAIS SIGNIFICATIVO
+00AB   2824           00324                 GOTO    MAIN            ;RETORNA PARA MAIN
+                      00325                 
+00AC                  00326 RANGE_6_TO_7
+00AC   308A           00327         MOVLW   .138;6.5                        NESTA ROTINA OS MESMO PASSOS SEGUIDOS ANTERIORMENTE SÃO 
+                            EXECUTADOS PARA O RAIO EM QUESTÃO           
+00AD   021E           00328         SUBWF   ADRESH,W                                    ;ATÉ O VALOR 10
+00AE   1803           00329         BTFSC   STATUS,C
+00AF   28B4           00330         GOTO    NEG7
+00B0   01A2           00331         CLRF    MSD
+00B1   3012           00332         MOVLW   B'00010010'
+00B2   00A3           00333         MOVWF   LSD
+00B3   2824           00334         GOTO    MAIN
+Warning[207]: Found label after column 1. (NEG7)
+00B4                  00335         NEG7    
+00B4   3013           00336                 MOVLW   B'00010011'
+00B5   00A3           00337                 MOVWF   LSD
+00B6   01A2           00338                 CLRF    MSD
+00B7   2824           00339                 GOTO    MAIN
+                      00340                 
+00B8                  00341 RANGE_7_TO_8
+00B8   30A0           00342         MOVLW   .160;7.5                        NESTA ROTINA OS MESMO PASSOS SEGUIDOS ANTERIORMENTE SÃO 
+                            EXECUTADOS PARA O RAIO EM QUESTÃO
+00B9   021E           00343         SUBWF   ADRESH,W                                    ;ATÉ O VALOR 10
+00BA   1803           00344         BTFSC   STATUS,C
+00BB   28C0           00345         GOTO    NEG8
+00BC   01A2           00346         CLRF    MSD
+00BD   3013           00347         MOVLW   B'00010011'
+00BE   00A3           00348         MOVWF   LSD
+00BF   2824           00349         GOTO    MAIN
+Warning[207]: Found label after column 1. (NEG8)
+00C0                  00350         NEG8    
+00C0   3020           00351                 MOVLW   B'00100000'
+00C1   00A3           00352                 MOVWF   LSD
+00C2   01A2           00353                 CLRF    MSD
+00C3   2824           00354                 GOTO    MAIN
+                      00355                 
+00C4                  00356 RANGE_8_TO_9
+00C4   30B5           00357         MOVLW   .181;8.5                        NESTA ROTINA OS MESMO PASSOS SEGUIDOS ANTERIORMENTE SÃO 
+                            EXECUTADOS PARA O RAIO EM QUESTÃO
+00C5   021E           00358         SUBWF   ADRESH,W                                    ;ATÉ O VALOR 10
+00C6   1803           00359         BTFSC   STATUS,C
+00C7   28CC           00360         GOTO    NEG9
+00C8   01A2           00361         CLRF    MSD
+00C9   3020           00362         MOVLW   B'00100000'
+00CA   00A3           00363         MOVWF   LSD
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-25-2018  10:12:53         PAGE  9
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00CB   2824           00364         GOTO    MAIN
+Warning[207]: Found label after column 1. (NEG9)
+00CC                  00365         NEG9    
+00CC   3021           00366                 MOVLW   B'00100001'
+00CD   00A3           00367                 MOVWF   LSD
+00CE   01A2           00368                 CLRF    MSD
+00CF   2824           00369                 GOTO    MAIN
+                      00370                 
+00D0                  00371 RANGE_9_TO_10
+00D0   30CA           00372         MOVLW   .202;9.5                O VALOR .202 EQUIVALE A 9.5V, ENTÃO ESSA SERÁ A REFERENCIA PARA 
+                            O ARREDONDAMENTO
+00D1   021E           00373         SUBWF   ADRESH,W                ;SUBTRAI A REFERENCIA DO ADRESH, ASSIM SABEREMOS SE O VALOR TA M
+                            AIS PRA 9 OU PRA 10
+00D2   1803           00374         BTFSC   STATUS,C                ;SE O BIT DE CARRY FOR 1, ENTÃO O VALOR DE ENTRADA TA MAIS PARA 
+                            10V
+00D3   28D8           00375         GOTO    NEG10                   ;CHAMA A PARTE DE ARREDONDAMENTO PRA CIMA, SE NÃO, ELE IRA ARRED
+                            ONDAR PARA BAIXO
+00D4   01A2           00376         CLRF    MSD                     ;LIMPA O DIGITO MAIS SIGNIFICATIVO, POIS ESTAMOS ABAIXO DE 10V
+00D5   3021           00377         MOVLW   B'00100001'             ;MOVE O SEGUINTE VALOR PARA O W, ESSE VALOR IRA CORREPONDER A 9,
+                             POIS O GPIO IRA TRABALHAR COM GP5,4,2,1, ENTÃO USAREMOS OS MESMO BITS PARA RESPRESNTAR O VALOR
+00D6   00A3           00378         MOVWF   LSD                     ;MOVE O VALOR PARA O DIGITO MENOS SIGNIFICATIVO, ELE IRA JOGAR 1
+                            001 NO GPIO [GP5,4,1,0]=[1001]
+00D7   2824           00379         GOTO    MAIN                    ;VOLTA PARA A MAIN
+Warning[207]: Found label after column 1. (NEG10)
+00D8                  00380         NEG10                           ;NA ROTINA DE ARREDONDAMENTO PARA CIMA, USAREMOS OS DOIS DIGITOS
+00D8   01A3           00381                 CLRF    LSD             ;PRIMEIRO COLOCAMOS ZERO MENOS SIGNIFICATIVO, POR SER A TENSÃO D
+                            E 10V
+00D9   3001           00382                 MOVLW   .1              ;EM SEGUIDA, MOVEMOS O VALOR DE 1 PARA W
+00DA   00A2           00383                 MOVWF   MSD             ;E O COLOCAMOS NO MAIS SIGNIFICATIVO, ASSIM FORMANDO O VALOR DE 
+                            10 V [MSD:LSD]
+00DB   2824           00384                 GOTO    MAIN            ;RETORNA PARA MAIN
+                      00385                 
+00DC                  00386 RANGE_10_TO_11
+00DC   30E0           00387         MOVLW   .224;10.5               O VALOR .224 EQUIVALE A 10.5V, ENTÃO ESSA SERÁ A REFERENCIA PARA
+                             O ARREDONDAMENTO
+00DD   021E           00388         SUBWF   ADRESH,W                ;SUBTRAI A REFERENCIA DO ADRESH, ASSIM SABEREMOS SE O VALOR TA M
+                            AIS PRA 10 OU PRA 11
+00DE   1803           00389         BTFSC   STATUS,C                ;SE O BIT DE CARRY FOR 1, ENTÃO O VALOR DE ENTRADA TA MAIS PARA 
+                            11V
+00DF   28E4           00390         GOTO    NEG11                   ;CHAMA A PARTE DE ARREDONDAMENTO PRA CIMA, SE NÃO, ELE IRA ARRED
+                            ONDAR PARA BAIXO
+00E0   01A3           00391         CLRF    LSD                     ;COMO NESSA PARTE É UM ARREDONDAMENTO PARA BAIXO EM 10V, MOVE-SE
+                             O VALOR DE 0 PARA O DIGITO MENOS SIGNIFICATIVO
+00E1   3001           00392         MOVLW   .1                      ;EM SEGUIDA COLOCA 1 NO DIGITO MAIS SIGNIFICATIVO, FORMADO O VAL
+                            OR DE 10V [MSD:LSD]
+00E2   00A2           00393         MOVWF   MSD
+00E3   2824           00394         GOTO    MAIN                    ;RETORNA PARA MAIN
+Warning[207]: Found label after column 1. (NEG11)
+00E4                  00395         NEG11   
+00E4   3001           00396                 MOVLW   .1              ;NA ROTINA DE ARREDONDAMENTO PARA CIMA, MOVE-SE 1 PARA W
+00E5   00A3           00397                 MOVWF   LSD             ;SE TRATANDO DE 11V, MOVE O W TANTO PARA O LSD, COMO MSD, FORMAN
+                            DO 11 V
+00E6   00A2           00398                 MOVWF   MSD
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-25-2018  10:12:53         PAGE 10
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+00E7   2824           00399                 GOTO    MAIN            ;RETORNA PARA MAIN
+                      00400 
+00E8                  00401 RANGE_11_TO_12  
+00E8   30F5           00402         MOVLW   .245;11.5               O VALOR .224 EQUIVALE A 10.5V, ENTÃO ESSA SERÁ A REFERENCIA PARA
+                             O ARREDONDAMENTO
+00E9   021E           00403         SUBWF   ADRESH,W                ;SUBTRAI A REFERENCIA DO ADRESH, ASSIM SABEREMOS SE O VALOR TA M
+                            AIS PRA 11 OU PRA 12
+00EA   1803           00404         BTFSC   STATUS,C                ;SE O BIT DE CARRY FOR 1, ENTÃO O VALOR DE ENTRADA TA MAIS PARA 
+                            12V
+00EB   28F0           00405         GOTO    NEG12                   ;CHAMA A PARTE DE ARREDONDAMENTO PRA CIMA, SE NÃO, ELE IRA ARRED
+                            ONDAR PARA BAIXO
+00EC   3001           00406         MOVLW   .1                      ;COMO NESSA PARTE É UM ARREDONDAMENTO PARA BAIXO EM 11V, MOVE-SE
+                             O VALOR DE 1 PARA O DIGITO MENOS E MAIS SIGNIFICATIVO
+00ED   00A3           00407         MOVWF   LSD
+00EE   00A2           00408         MOVWF   MSD
+00EF   2824           00409         GOTO    MAIN                    ;RETORNA PARA MAIN
+Warning[207]: Found label after column 1. (NEG12)
+00F0                  00410         NEG12   
+00F0   3002           00411                 MOVLW   .2              ;NA ROTINA DE ARREDONDAMENTO PARA CIMA, MOVE-SE 2 PARA W
+00F1   00A3           00412                 MOVWF   LSD             ;SALVA-O NO DIGITO MENOS SIGNIFICATIVO
+00F2   3001           00413                 MOVLW   .1              ;MOVE O 1 PARA O W
+00F3   00A2           00414                 MOVWF   MSD             ;JOGA-O NO DIGITO MAIS SIGNIFICATIVO
+00F4   2824           00415                 GOTO    MAIN            ;RETORNA PARA MAIN
+                      00416         
+                      00417         
+                      00418 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00419 ;*                       FIM DO PROGRAMA                           *
+                      00420 ;* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                      00421 
+                      00422         END
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-25-2018  10:12:53         PAGE 11
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+ADCON0                            0000001F
+ADCS0                             00000004
+ADCS1                             00000005
+ADCS2                             00000006
+ADFM                              00000007
+ADIE                              00000006
+ADIF                              00000006
+ADON                              00000000
+ADRESH                            0000001E
+ADRESL                            0000009E
+AD_CONV                           00000028
+ANS0                              00000000
+ANS1                              00000001
+ANS2                              00000002
+ANS3                              00000003
+ANSEL                             0000009F
+BANK0                             BCF STATUS,RP0
+BANK1                             BSF STATUS,RP0
+BEGCONV                           00000027
+C                                 00000000
+CAL0                              00000002
+CAL1                              00000003
+CAL2                              00000004
+CAL3                              00000005
+CAL4                              00000006
+CAL5                              00000007
+CHS0                              00000002
+CHS1                              00000003
+CINV                              00000004
+CIS                               00000003
+CM0                               00000000
+CM1                               00000001
+CM2                               00000002
+CMCON                             00000019
+CMIE                              00000003
+CMIF                              00000003
+COUT                              00000006
+DC                                00000001
+EEADR                             0000009B
+EECON1                            0000009C
+EECON2                            0000009D
+EEDAT                             0000009A
+EEDATA                            0000009A
+EEIE                              00000007
+EEIF                              00000007
+F                                 00000001
+FSR                               00000004
+GIE                               00000007
+GO                                00000001
+GO_DONE                           00000001
+GO_NOT_DONE                       00000001
+GP0                               00000000
+GP1                               00000001
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-25-2018  10:12:53         PAGE 12
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+GP2                               00000002
+GP3                               00000003
+GP4                               00000004
+GP5                               00000005
+GPIE                              00000003
+GPIF                              00000000
+GPIO                              00000005
+GPIO0                             00000000
+GPIO1                             00000001
+GPIO2                             00000002
+GPIO3                             00000003
+GPIO4                             00000004
+GPIO5                             00000005
+HIGH_DIG                          0000000C
+INDF                              00000000
+INICIO                            00000013
+INTCON                            0000000B
+INTE                              00000004
+INTEDG                            00000006
+INTF                              00000001
+IOC                               00000096
+IOC0                              00000000
+IOC1                              00000001
+IOC2                              00000002
+IOC3                              00000003
+IOC4                              00000004
+IOC5                              00000005
+IOCB                              00000096
+IOCB0                             00000000
+IOCB1                             00000001
+IOCB2                             00000002
+IOCB3                             00000003
+IOCB4                             00000004
+IOCB5                             00000005
+IRP                               00000007
+LOW_DIG                           0000002C
+LSD                               00000023
+MAIN                              00000024
+MSD                               00000022
+NEG1                              0000006C
+NEG10                             000000D8
+NEG11                             000000E4
+NEG12                             000000F0
+NEG2                              00000078
+NEG3                              00000084
+NEG4                              00000090
+NEG5                              0000009C
+NEG6                              000000A8
+NEG7                              000000B4
+NEG8                              000000C0
+NEG9                              000000CC
+NOT_BOD                           00000000
+NOT_BOR                           00000000
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-25-2018  10:12:53         PAGE 13
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+NOT_DONE                          00000001
+NOT_GPPU                          00000007
+NOT_PD                            00000003
+NOT_POR                           00000001
+NOT_T1SYNC                        00000002
+NOT_TO                            00000004
+OPTION_REG                        00000081
+OSCCAL                            00000090
+PCL                               00000002
+PCLATH                            0000000A
+PCON                              0000008E
+PEIE                              00000006
+PIE1                              0000008C
+PIR1                              0000000C
+PROC_AD                           00000033
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RANGE_0_TO_1                      00000064
+RANGE_10_TO_11                    000000DC
+RANGE_11_TO_12                    000000E8
+RANGE_1_TO_2                      00000070
+RANGE_2_TO_3                      0000007C
+RANGE_3_TO_4                      00000088
+RANGE_4_TO_5                      00000094
+RANGE_5_TO_6                      000000A0
+RANGE_6_TO_7                      000000AC
+RANGE_7_TO_8                      000000B8
+RANGE_8_TO_9                      000000C4
+RANGE_9_TO_10                     000000D0
+RD                                00000000
+RP0                               00000005
+RP1                               00000006
+SAI_INT                           00000007
+STATUS                            00000003
+STATUS_TEMP                       00000021
+T0CS                              00000005
+T0IE                              00000005
+T0IF                              00000002
+T0SE                              00000004
+T1CKPS0                           00000004
+T1CKPS1                           00000005
+T1CON                             00000010
+T1IE                              00000000
+T1IF                              00000000
+T1OSCEN                           00000003
+TEMP                              00000024
+TMR0                              00000001
+TMR0IE                            00000005
+TMR0IF                            00000002
+TMR1                              0000000E
+TMR1CS                            00000001
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-25-2018  10:12:53         PAGE 14
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+TMR1GE                            00000006
+TMR1H                             0000000F
+TMR1IE                            00000000
+TMR1IF                            00000000
+TMR1L                             0000000E
+TMR1ON                            00000000
+TRISIO                            00000085
+TRISIO0                           00000000
+TRISIO1                           00000001
+TRISIO2                           00000002
+TRISIO3                           00000003
+TRISIO4                           00000004
+TRISIO5                           00000005
+VCFG                              00000006
+VR0                               00000000
+VR1                               00000001
+VR2                               00000002
+VR3                               00000003
+VRCON                             00000099
+VREN                              00000007
+VRR                               00000005
+W                                 00000000
+WPU                               00000095
+WPU0                              00000000
+WPU1                              00000001
+WPU2                              00000002
+WPU4                              00000004
+WPU5                              00000005
+WR                                00000001
+WREN                              00000002
+WRERR                             00000003
+W_TEMP                            00000020
+Z                                 00000002
+_BODEN_OFF                        00003FBF
+_BODEN_ON                         00003FFF
+_BOREN_OFF                        00003FBF
+_BOREN_ON                         00003FFF
+_CONFIG                           00002007
+_CPD_OFF                          00003FFF
+_CPD_ON                           00003EFF
+_CP_OFF                           00003FFF
+_CP_ON                            00003F7F
+_DEVID1                           00002006
+_EC_OSC                           00003FFB
+_EXTRC_OSC_CLKOUT                 00003FFF
+_EXTRC_OSC_NOCLKOUT               00003FFE
+_FOSC_EC                          00003FFB
+_FOSC_EXTRCCLK                    00003FFF
+_FOSC_EXTRCIO                     00003FFE
+_FOSC_HS                          00003FFA
+_FOSC_INTRCCLK                    00003FFD
+_FOSC_INTRCIO                     00003FFC
+_FOSC_LP                          00003FF8
+MPASM 5.77  /HOME/FELIPE/DOCUMENTOS/UNIVERSI   3-25-2018  10:12:53         PAGE 15
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_FOSC_XT                          00003FF9
+_HS_OSC                           00003FFA
+_IDLOC0                           00002000
+_IDLOC1                           00002001
+_IDLOC2                           00002002
+_IDLOC3                           00002003
+_INTRC_OSC_CLKOUT                 00003FFD
+_INTRC_OSC_NOCLKOUT               00003FFC
+_LP_OSC                           00003FF8
+_MCLRE_OFF                        00003FDF
+_MCLRE_ON                         00003FFF
+_PWRTE_OFF                        00003FFF
+_PWRTE_ON                         00003FEF
+_WDTE_OFF                         00003FF7
+_WDTE_ON                          00003FFF
+_WDT_OFF                          00003FF7
+_WDT_ON                           00003FFF
+_XT_OSC                           00003FF9
+__12F675                          00000001
+__DEBUG                           
+__MPLAB_DEBUGGER_SIMULATOR        1
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : X---XXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0040 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+0080 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX
+00C0 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXX-----------
+2000 : -------X-------- ---------------- ---------------- ----------------
+
+All other memory blocks unused.
+
+Program Memory Words Used:   242
+Program Memory Words Free:   782
+
+
+Errors   :     0
+Warnings :    12 reported,     0 suppressed
+Messages :     3 reported,     0 suppressed
+
+

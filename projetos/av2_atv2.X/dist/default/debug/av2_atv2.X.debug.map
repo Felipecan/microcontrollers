@@ -1,0 +1,98 @@
+MPLINK 5.08, LINKER
+Linker Map File - Created Sun Mar 25 13:12:53 2018
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000002
+                   .org_2       code   0x000004    program   0x0001e2
+.config_2007_/HOME/FELIPE/DOCUMENTOS/UNIVERSI       code   0x002007    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000000      
+                            0x000004    0x0000f4      
+                            0x002007    0x002007      
+            243 out of 1158 program addresses used, program memory utilization is 20%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                  AD_CONV   0x000028    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                  BEGCONV   0x000027    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                 HIGH_DIG   0x00000c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                   INICIO   0x000013    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                  LOW_DIG   0x00002c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     MAIN   0x000024    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG1   0x00006c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                    NEG10   0x0000d8    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                    NEG11   0x0000e4    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                    NEG12   0x0000f0    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG2   0x000078    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG3   0x000084    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG4   0x000090    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG5   0x00009c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG6   0x0000a8    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG7   0x0000b4    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG8   0x0000c0    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG9   0x0000cc    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                  PROC_AD   0x000033    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_0_TO_1   0x000064    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+           RANGE_10_TO_11   0x0000dc    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+           RANGE_11_TO_12   0x0000e8    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_1_TO_2   0x000070    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_2_TO_3   0x00007c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_3_TO_4   0x000088    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_4_TO_5   0x000094    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_5_TO_6   0x0000a0    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_6_TO_7   0x0000ac    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_7_TO_8   0x0000b8    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_8_TO_9   0x0000c4    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+            RANGE_9_TO_10   0x0000d0    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                  SAI_INT   0x000007    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                  SAI_INT   0x000007    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                 HIGH_DIG   0x00000c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                   INICIO   0x000013    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     MAIN   0x000024    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                  BEGCONV   0x000027    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                  AD_CONV   0x000028    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                  LOW_DIG   0x00002c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                  PROC_AD   0x000033    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_0_TO_1   0x000064    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG1   0x00006c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_1_TO_2   0x000070    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG2   0x000078    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_2_TO_3   0x00007c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG3   0x000084    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_3_TO_4   0x000088    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG4   0x000090    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_4_TO_5   0x000094    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG5   0x00009c    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_5_TO_6   0x0000a0    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG6   0x0000a8    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_6_TO_7   0x0000ac    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG7   0x0000b4    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_7_TO_8   0x0000b8    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG8   0x0000c0    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+             RANGE_8_TO_9   0x0000c4    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                     NEG9   0x0000cc    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+            RANGE_9_TO_10   0x0000d0    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                    NEG10   0x0000d8    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+           RANGE_10_TO_11   0x0000dc    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                    NEG11   0x0000e4    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+           RANGE_11_TO_12   0x0000e8    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+                    NEG12   0x0000f0    program     static /home/felipe/Documentos/Universidade/microcontroladores/projetos/av2_atv2.X/atv2.ASM
+
+
